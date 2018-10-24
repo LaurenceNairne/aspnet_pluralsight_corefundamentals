@@ -8,7 +8,9 @@ It's worth mentioning that this course uses ASP.NET Core 2.0 (not ASP.NET Framew
 
 Program.cs is one of two classes present when creating a new ASP.NET Core Web Application. Like a standard console application, it has a `Main()` method that is used to launch the app. In this case, it calls the `BuildWebHost()` to return an `IWebHost` implementation, then calls `Run()` to get the WebHost running.
 
-### BuildWebHost
+The `UseStartup<Class_Name>()` method registers the startup logic and instantiates an object of the class provided to it. It then invokes the two methods `ConfigureServices()` and `Configure()`.
+
+### BuildWebHost()
 
 This method creates a webhost builder object, sets it to use a `Startup` object for dependencies, then builds it all.
 
@@ -42,6 +44,27 @@ services.AddSingleton<Service_Type>(); //Only make one instance for the entire a
 services.AddTransient<Service_Type>(); //Create a new instance every time a user needs to access the service
 services.AddScoped<Service_Type>(); // Create a new instance for every HTTP request
 ```
+## Middleware
 
+In ASP.NET Core, middleware defines how an application responds to HTTP requests and how we display error information.
+
+- The order in which middleware appears in the `Configure()` method is significant.
+- HTTP request arrives at the server (e.g POST/reviews)
+- Each piece of middleware is an object with a specific role
+- They work in a bi-directional Pipeline design patter:
+-- HTTP request moves through middleware objects until it gets to something that can provide a response (usually through a router)
+-- If nothing found, error returned
+-- Request flows in through middlewares, response flows back out in the opposite direction
+-- The HTML response (with 200 OK status code) exits the server, over the network to the client waiting for it
+
+## Working with environments and environment variables
+
+- ASP.NET Core understands the concept of runtime environments
+- The current environment can be scrutinised and set in the `Startup.Configure()` method
+- In this way, we can show different content depending on the environment we're currently in
+- As an example, the default Startup class contains a conditional statement that checks if we're currently in the development environment, and shows a developer exception page when thre's an error if we are
+- ASP.NET has present boolean values to check against `IsDevelopment`, `IsStaging` and `IsProduction`
+- We can use custom environments using the `IsEnvironment("Environment_Name")` boolean
+- We can set environment using the `EnvironmentName` property.
 
 
