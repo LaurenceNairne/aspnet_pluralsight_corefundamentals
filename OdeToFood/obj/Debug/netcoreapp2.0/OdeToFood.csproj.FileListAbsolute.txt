@@ -1,0 +1,11 @@
+D:\Github_Repos\ASP.NET_Learning\aspnet_pluralsight_corefundamentals\OdeToFood\bin\Debug\netcoreapp2.0\OdeToFood.deps.json
+D:\Github_Repos\ASP.NET_Learning\aspnet_pluralsight_corefundamentals\OdeToFood\bin\Debug\netcoreapp2.0\OdeToFood.runtimeconfig.json
+D:\Github_Repos\ASP.NET_Learning\aspnet_pluralsight_corefundamentals\OdeToFood\bin\Debug\netcoreapp2.0\OdeToFood.runtimeconfig.dev.json
+D:\Github_Repos\ASP.NET_Learning\aspnet_pluralsight_corefundamentals\OdeToFood\bin\Debug\netcoreapp2.0\OdeToFood.dll
+D:\Github_Repos\ASP.NET_Learning\aspnet_pluralsight_corefundamentals\OdeToFood\bin\Debug\netcoreapp2.0\OdeToFood.pdb
+D:\Github_Repos\ASP.NET_Learning\aspnet_pluralsight_corefundamentals\OdeToFood\obj\Debug\netcoreapp2.0\OdeToFood.csprojAssemblyReference.cache
+D:\Github_Repos\ASP.NET_Learning\aspnet_pluralsight_corefundamentals\OdeToFood\obj\Debug\netcoreapp2.0\OdeToFood.csproj.CoreCompileInputs.cache
+D:\Github_Repos\ASP.NET_Learning\aspnet_pluralsight_corefundamentals\OdeToFood\obj\Debug\netcoreapp2.0\OdeToFood.AssemblyInfoInputs.cache
+D:\Github_Repos\ASP.NET_Learning\aspnet_pluralsight_corefundamentals\OdeToFood\obj\Debug\netcoreapp2.0\OdeToFood.AssemblyInfo.cs
+D:\Github_Repos\ASP.NET_Learning\aspnet_pluralsight_corefundamentals\OdeToFood\obj\Debug\netcoreapp2.0\OdeToFood.dll
+D:\Github_Repos\ASP.NET_Learning\aspnet_pluralsight_corefundamentals\OdeToFood\obj\Debug\netcoreapp2.0\OdeToFood.pdb
