@@ -85,3 +85,7 @@ When concerning HTML pages, we can set a default page that loads when we sent a 
 It's important to note that `UseDefaultFiles()` does not serve anything back to the user. All it is doing is looking to see if there is a default file avaiable in wwwroot, and if it finds one, it will update the request path which will be sent on towards `UseStaticFiles()` which handles the stream back to the user. This is critical because it needs to come **before** `UseStaticFiles()` in `Startup.Configure()`.
 
 Finally, `app.UseFileServer()` will install both of the above middlewares to cut down on keystrokes.
+
+## MVC Framework
+
+MVC design pattern separates concerns into three categories: Models, Views and Controllers.
