@@ -30,7 +30,9 @@ namespace OdeToFood
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }           
+            }
+
+            app.UseFileServer();
 
             app.Run(async (context) =>
             {
