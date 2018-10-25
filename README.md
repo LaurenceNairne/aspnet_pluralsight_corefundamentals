@@ -52,10 +52,10 @@ In ASP.NET Core, middleware defines how an application responds to HTTP requests
 - HTTP request arrives at the server (e.g POST/reviews)
 - Each piece of middleware is an object with a specific role
 - They work in a bi-directional Pipeline design patter:
--- HTTP request moves through middleware objects until it gets to something that can provide a response (usually through a router)
--- If nothing found, error returned
--- Request flows in through middlewares, response flows back out in the opposite direction
--- The HTML response (with 200 OK status code) exits the server, over the network to the client waiting for it
+- HTTP request moves through middleware objects until it gets to something that can provide a response (usually through a router)
+- If nothing found, error returned
+- Request flows in through middlewares, response flows back out in the opposite direction
+- The HTML response (with 200 OK status code) exits the server, over the network to the client waiting for it
 
 ## Working with environments and environment variables
 
@@ -67,4 +67,21 @@ In ASP.NET Core, middleware defines how an application responds to HTTP requests
 - We can use custom environments using the `IsEnvironment("Environment_Name")` boolean
 - We can set environment using the `EnvironmentName` property.
 
+We can use multiple profiles to run our application. By default in VS2017, we get two profiles: IIS Express, and our default project profile. There are more differences between the two, but at this point, it's worth mentioning that we can use different runtime environments between profiles.
 
+This can be set in two places (they're actually the same but one is essentially a UI on top of the other:
+
+- launchSettings.json which can be found as a child of Properties
+- Just double-click Properties and the UI will open
+ 
+We can also access different `appsettings.json` files depending on the environment we're running in.To do so, we just need to create a new appsettings file where we suffix the filename with the corresponding environment name. For example `appsettings.Development.json`. As long as an environment exists by the name appended to it, that file will be used when necessary.
+
+## Serving static files
+
+In order to use static files (such as pages, stylesheets, js files, etc), we need to implement a middleware by invoking `app.UseStaticFiles()`. This allows us to serve static content as required. It inspects the HTTP request, and when concerned it searches the filesystem inside the `wwwroot` folder for a file by the given name in the request. If found, it will stream it back to the user. If it doesn't find it, it will invoke the next middleware.
+
+When concerning HTML pages, we can set a default page that loads when we sent a request for the root directory by invoking the `app.UseDefaultFiles()`middleware. This looks at an incoming request, if it is for a directory like wwwroot, it will check for a default file. By default, `index.html` is the file this middleware looks for. If a custom file is required, a `DefaultFilesOptions` object can be brought in to provide a custom filename.
+
+It's important to note that `UseDefaultFiles()` does not serve anything back to the user. All it is doing is looking to see if there is a default file avaiable in wwwroot, and if it finds one, it will update the request path which will be sent on towards `UseStaticFiles()` which handles the stream back to the user. This is critical because it needs to come **before** `UseStaticFiles()` in `Startup.Configure()`.
+
+Finally, `app.UseFileServer()` will install both of the above middlewares to cut down on keystrokes.
