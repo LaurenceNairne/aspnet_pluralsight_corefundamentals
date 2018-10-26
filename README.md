@@ -96,19 +96,16 @@ Before MVC can be used, we need to add it as a service in `Startup.ConfigureServ
 
 In this project, `UseStaticFiles()` invokes `UseMvc()` if a static file is not requested. ASP.NET MVC has conventions to map specific parts of a URL in a HTTP request to methods in a controller class, which MVC instantiates.
 
+So we want an incoming request to be directed to a specific controller. We could have implemented `app.UseMvcWithDefaultRouting()`which means a `HomeController` class will receive a request to the root of the app by default. If this class contains an `Index()` method, this will be the default action used to determine the response returned to the view. However, using `app.UseMvc()` is more flexible, but requires more setup. To specify controller manually, we need to use routing.
+
 ### Routing
 
-This concerns how we get a HTTP request to the correct controller. There are two types used in ASP.NET (that I'm aware of so far):
-
-- Convention-based routing
-- Attribute-based routing
+This concerns how we get a HTTP request to the correct controller and how to invoke a public method within it. There are two types of routing used in ASP.NET - that I'm aware of so far (and they can be used in tandem):
 
 #### Convention-based routing
 
-
+This option defines templates for how MVC should get a controller and action name from a URL in `Startup.Configure()`.
 
 #### Attribute-based routing
 
-So we want an incoming request to be directed to a specific controller. By default, a `HomeController` class will receive a request to the root of the app by default. If this class contains an `Index()` method, this will be the default action used to determine the response returned to the view, unless another is specified.
-
-
+This option applies C# attributes to the controllers (classes) and actions (public methods) themselves which lets MVC know when to call a specific action.
