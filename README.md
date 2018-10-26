@@ -106,6 +106,24 @@ This concerns how we get a HTTP request to the correct controller and how to inv
 
 This option defines templates for how MVC should get a controller and action name from a URL in `Startup.Configure()`.
 
+Example:
+
+```CSharp
+public void Configure(
+            IApplicationBuilder app, 
+            IHostingEnvironment env)
+{
+            app.UseStaticFiles();
+            app.UseMvc(ConfigureRoutes);
+}
+private void ConfigureRoutes(IRouteBuilder routeBuilder)
+{
+            routeBuilder.MapRoute(
+                "Default", 
+                "{controller=Home}/{action=Index}/{id?}");
+}
+```
+
 #### Attribute-based routing
 
 This option applies C# attributes to the controllers (classes) and actions (public methods) themselves which lets MVC know when to call a specific action.
