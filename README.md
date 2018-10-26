@@ -84,8 +84,14 @@ When concerning HTML pages, we can set a default page that loads when we sent a 
 
 It's important to note that `UseDefaultFiles()` does not serve anything back to the user. All it is doing is looking to see if there is a default file avaiable in wwwroot, and if it finds one, it will update the request path which will be sent on towards `UseStaticFiles()` which handles the stream back to the user. This is critical because it needs to come **before** `UseStaticFiles()` in `Startup.Configure()`.
 
-Finally, `app.UseFileServer()` will install both of the above middlewares to cut down on keystrokes.
+Finally, `app.UseFileServer()` will install both of the above middlewares to cut down on keystrokes. For MVC, it's best to just use `UseStaticFiles()` because we only want to respond with a static file if the request explicitly matches a filepath.
 
 ## MVC Framework
 
-MVC design pattern separates concerns into three categories: Models, Views and Controllers.
+MVC design pattern separates concerns into three categories: Models, Views and Controllers. ASP.NET has a service to implement this design pattern. It allows us to map an incoming HTTP request to a method on a class (a controller) and we can use it to query a database, read files, execute logic and calculations in a model, then respond to the request via a view HTML page, or XML/JSON if we're just providing an API.
+
+Before MVC can be used, we need to add it as a service in `Startup.ConfigureServices()`. It's a known service, so `service.AddMvc()` is all that's required so long as the NuGet dependency is present in the project.
+
+In this project, `UseStaticFiles()` invokes `UseMvc()` if a static file is not requested. ASP.NET MVC has conventions to map specific parts of a URL in a HTTP request to methods in a class, which MVC instantiates.
+
+So we want an incoming request to be directed to a specific controller. By default, a `HomeController` will receive a request to the root of the app by default.
