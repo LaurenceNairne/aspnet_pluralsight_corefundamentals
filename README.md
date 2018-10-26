@@ -96,7 +96,7 @@ Before MVC can be used, we need to add it as a service in `Startup.ConfigureServ
 
 In this project, `UseStaticFiles()` invokes `UseMvc()` if a static file is not requested. ASP.NET MVC has conventions to map specific parts of a URL in a HTTP request to methods in a controller class, which MVC instantiates.
 
-So we want an incoming request to be directed to a specific controller. We could have implemented `app.UseMvcWithDefaultRouting()`which means a `HomeController` class will receive a request to the root of the app by default. If this class contains an `Index()` method, this will be the default action used to determine the response returned to the view. However, using `app.UseMvc()` is more flexible, but requires more setup. To specify controller manually, we need to use routing.
+So we want an incoming request to be directed to a specific controller. We could have implemented `app.UseMvcWithDefaultRoute()`which means a `HomeController` class will receive a request to the root of the app by default. If this class contains an `Index()` method, this will be the default action used to determine the response returned to the view. However, using `app.UseMvc()` is more flexible, but requires more setup. To specify controller manually, we need to use routing.
 
 ### Routing
 
@@ -105,6 +105,14 @@ This concerns how we get a HTTP request to the correct controller and how to inv
 #### Convention-based routing
 
 This option defines templates for how MVC should get a controller and action name from a URL in `Startup.Configure()`.
+
+If we were to leave `app.UseMvc()` as it is, it wouldn't know how to handle any requests. It requires an overload to take an `Action<IRouteBuilder>`. In this case, this takes the form of a private `ConfigureRoutes(IRouteBuilder routeBuilder)` method. It is in this that we will define our routing template.
+
+Inside this method we use our routeBuilder to configure a `MapRoute()`. We provide a friendly name for the route - in this case `"Default"` - and then the template specifics - in this case `"{controller=Home}/{action=Index}"`. This is literally saying "When a controller class name appears in the request URL straight after the root, followed by a forward slash and then a recognised public method name, instantiate the controller and invoke the method".
+
+There are a couple more things worth mentioning here. In our example, we have `=Home` following the controller and `=Index` following the action. These are defaults - i.e. we're explicitly defining the work handled by `UseMvcWithDefaultRoute()` in that we are saying, "if no controller and action is defined in the request URL, instantiate this controller and invoke this action by default". The difference here is that we are manually setting what those defaults are, so they could be any controller and action we wanted.
+
+Secondly, when the controller name appears in the URL, it does not require "Controller" part. So `HomeController` can appear as "Home" in the URL and MVC will append this with "Controller" when processing it. Further reading states that a Controller file __must__ be named as "SomethingController" by convention. The official word is that this is to avoid class name clashes between controllers and models - I'm not convinced this should have been enforced, but I'm not too bothered about that. Plus naming is hard enough as it is anyway.
 
 Example:
 
