@@ -114,6 +114,8 @@ There are a couple more things worth mentioning here. In our example, we have `=
 
 Secondly, when the controller name appears in the URL, it does not require "Controller" part. So `HomeController` can appear as "Home" in the URL and MVC will append this with "Controller" when processing it. Further reading states that a Controller file __must__ be named as "SomethingController" by convention. The official word is that this is to avoid class name clashes between controllers and models - I'm not convinced this should have been enforced, but I'm not too bothered about that. Plus naming is hard enough as it is anyway.
 
+Final point, in the example below, there is a third parameter that the template can accept in the request URL. That is an "id", but this is followed by a "?", meaning it's an optional parameter and is not required. This gives us the option to do things like query the database for a given ID, etc.
+
 Example:
 
 ```CSharp
