@@ -116,7 +116,7 @@ Secondly, when the controller name appears in the URL, it does not require "Cont
 
 Final point, in the example below, there is a third parameter that the template can accept in the request URL. That is an "id", but this is followed by a "?", meaning it's an optional parameter and is not required. This gives us the option to do things like query the database for a given ID, etc.
 
-Example:
+**Example:**
 
 ```CSharp
 public class Startup
@@ -174,7 +174,9 @@ public class AboutController
     }
 }
 ```
-We can also define the routing above the controller class declaration. Doing this means it sits in a single place and we know all actions will follow the same URL format. We do this by appending a forward slash and then an action token (`[action]`) to the route. We can still add in fixed elements before and in-between the controller and action, but not sure it makes sense to.
+We can also define the routing above the controller class declaration. Doing this means it sits in a single place and we know all actions will follow the same URL format. We do this by appending a forward slash and then an action token (`[action]`) to the route. We can still add in fixed elements before and in-between the controller and action like `[Route("pages/[controller]/smallpages/[action]")]`, but I'm not sure it makes sense to.
+
+This does not allow us to provide a default action - or at least as far as I can tell. I've tried a few things but none seemed to work.
 
 **Example where route is defined entirely on the controller:**
 ```CSharp
