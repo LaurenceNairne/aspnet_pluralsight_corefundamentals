@@ -155,7 +155,7 @@ This method is useful as it allows us to control what each action should appear 
 
 The drawback of this method is that you need to write attributes for every action that you have (there could be loads) and you're wasting keystrokes if you intend to handle them all in the same way (and if you do not want a default).
 
-Example where route is defined in a combination of controller level and action level:
+**Example where route is defined in a combination of controller level and action level:**
 
 ```CSharp
 [Route("[controller]")]
@@ -176,7 +176,7 @@ public class AboutController
 ```
 We can also define the routing above the controller class declaration. Doing this means it sits in a single place and we know all actions will follow the same URL format. We do this by appending a forward slash and then an action token (`[action]`) to the route. We can still add in fixed elements before and in-between the controller and action, but not sure it makes sense to.
 
-Example where route is defined entirely on the controller:
+**Example where route is defined entirely on the controller:**
 ```CSharp
 [Route("[controller]/[action]")]
 public class AboutController
