@@ -145,6 +145,16 @@ public class Startup
 
 This option applies C# attributes to the controllers (classes) and actions (public methods) themselves which lets MVC know when to call a specific action.
 
+While this can be used in combination with the convention-based routing, it gives more flexibility and overrides the convention when used on a specific controller.
+
+A route attribute takes the form of `[Route("")]`, and what is entered between the quotes defines the expected value in the URL in the appropriate place. This could be a literal string like "about", but this may get confusing if we were to change the class name. To keep the two aligned, we can also use a token like `[controller]`, which tells MVC to just use the controller name as the expected value.
+
+There's a couple of ways to achieve the required result, with their own strengths and weaknesses. Firstly, you can set an attribute on the controller and each action separately. MVC knows that the route at the controller level will be the first element in the URL and that any attributes on actions within the class will follow on. 
+
+This method is useful as it allows us to control what each action should appear as in the URL at a granular level. We can again use a string here with the explicit value, or use an `[action]` token to make it just match the action name. A major benefit of this option is that you can set a default action by leaving the route blank in its route attribute (`[Route("")]`), and as long as attributes have been set on the other actions, this will always default to your chosen action if the URL doesn't contain anything beyond the controller part of the path. Finally, we could choose to make a single action be invoked from a custom route like `[Route("details/[action]")]`, while the rest are simply `[Route("[action]")]`. So lots of flexibility.
+
+The drawback of this method is that you need to write attributes for every action that you have (there could be loads) and you're wasting keystrokes if you intend to handle them all in the same way (and if you do not want a default).
+
 Example where route is defined in a combination of controller level and action level:
 
 ```CSharp
@@ -164,6 +174,7 @@ public class AboutController
     }
 }
 ```
+We can also define the routing above the controller class declaration. Doing this means it sits in a single place and we know all actions will follow the same URL format. We do this by appending a forward slash and then an action token (`[action]`) to the route. We can still add in fixed elements before and in-between the controller and action, but not sure it makes sense to.
 
 Example where route is defined entirely on the controller:
 ```CSharp
