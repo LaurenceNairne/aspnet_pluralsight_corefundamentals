@@ -88,10 +88,27 @@ Finally, `app.UseFileServer()` will install both of the above middlewares to cut
 
 ## MVC Framework
 
-MVC design pattern separates concerns into three categories: Models, Views and Controllers. ASP.NET has a service to implement this design pattern. It allows us to map an incoming HTTP request to a method on a class (a controller) and we can use it to query a database, read files, execute logic and calculations in a model, then respond to the request via a view HTML page, or XML/JSON if we're just providing an API.
+MVC design pattern separates concerns into three categories: Models, Views and Controllers. ASP.NET has a service to implement this design pattern.
+
+So at a top level, a controller receives the request and works out how to handle it. It instantiates a model object responsible for holding the information that the user has requested. In complex models, this could be several classes and therefore several objects. If we're building an API layer, the controller can return the model serialised as JSON, XML or some other data type required. If we're needing to render something to a HTML web page, the controller can select a view to render the model to. The View will receive the information from the model and use it to construct the HTML page.
 
 Before MVC can be used, we need to add it as a service in `Startup.ConfigureServices()`. It's a known service, so `service.AddMvc()` is all that's required so long as the NuGet dependency is present in the project.
 
-In this project, `UseStaticFiles()` invokes `UseMvc()` if a static file is not requested. ASP.NET MVC has conventions to map specific parts of a URL in a HTTP request to methods in a class, which MVC instantiates.
+In this project, `UseStaticFiles()` invokes `UseMvc()` if a static file is not requested. ASP.NET MVC has conventions to map specific parts of a URL in a HTTP request to methods in a controller class, which MVC instantiates.
 
-So we want an incoming request to be directed to a specific controller. By default, a `HomeController` will receive a request to the root of the app by default.
+### Routing
+
+This concerns how we get a HTTP request to the correct controller. There are two types used in ASP.NET (that I'm aware of so far):
+
+- Convention-based routing
+- Attribute-based routing
+
+#### Convention-based routing
+
+
+
+#### Attribute-based routing
+
+So we want an incoming request to be directed to a specific controller. By default, a `HomeController` class will receive a request to the root of the app by default. If this class contains an `Index()` method, this will be the default action used to determine the response returned to the view, unless another is specified.
+
+
