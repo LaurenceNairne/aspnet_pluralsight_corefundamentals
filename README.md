@@ -119,21 +119,65 @@ Final point, in the example below, there is a third parameter that the template 
 Example:
 
 ```CSharp
-public void Configure(
+public class Startup
+    {
+        ...
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(
             IApplicationBuilder app, 
             IHostingEnvironment env)
-{
+        {
             app.UseStaticFiles();
             app.UseMvc(ConfigureRoutes);
-}
-private void ConfigureRoutes(IRouteBuilder routeBuilder)
-{
+        }
+
+        private void ConfigureRoutes(IRouteBuilder routeBuilder)
+        {
             routeBuilder.MapRoute(
                 "Default", 
                 "{controller=Home}/{action=Index}/{id?}");
-}
+        }
+    }
 ```
 
 #### Attribute-based routing
 
 This option applies C# attributes to the controllers (classes) and actions (public methods) themselves which lets MVC know when to call a specific action.
+
+Example where route is defined in a combination of controller level and action level:
+
+```CSharp
+[Route("[controller]")]
+public class AboutController
+{
+    [Route("")]
+    public string Phone()
+    {
+        return "+44 07777 777 777";
+    }
+
+    [Route("[action]")]
+    public string Address()
+    {
+        return "123 Fake Street,\nMadeupville,\nNowhere";
+    }
+}
+```
+
+Example where route is defined entirely on the controller:
+```CSharp
+[Route("[controller]/[action]")]
+public class AboutController
+{
+    public string Phone()
+    {
+        return "+44 07777 777 777";
+    }
+
+    public string Address()
+    {
+        return "123 Fake Street,\nMadeupville,\nNowhere";
+    }
+}
+```
