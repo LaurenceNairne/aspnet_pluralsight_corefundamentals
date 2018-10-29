@@ -98,6 +98,64 @@ In this project, `UseStaticFiles()` invokes `UseMvc()` if a static file is not r
 
 So we want an incoming request to be directed to a specific controller. We could have implemented `app.UseMvcWithDefaultRoute()`which means a `HomeController` class will receive a request to the root of the app by default. If this class contains an `Index()` method, this will be the default action used to determine the response returned to the view. However, using `app.UseMvc()` is more flexible, but requires more setup. To specify controller manually, we need to use routing.
 
+### Controllers
+
+A controller simply has to create a model object (from a given model class) and decide what to do with it when a request is received.
+
+Within ASP.NET MVC there is a base Controller class that most controllers derive from. It contains a lot of useful methods - many of which return objects that derive from `IActionResult` interface. One such method is `Controller.View()`, which creates a `ViewResult` object that takes in a model to be rendered by the view on a HTML page.
+
+It's worth noting that there is a separation between the controller deciding **what** will be written into the HTTP response, and the writing and sending of the response. That is, nothing is sent back to the client immediately. In the controller, it creates the IActionResult datastructure which informs MVC what to do. Later in the processing pipeline, MVC carries out that instruction.
+
+This makes testing easier, as we can test controllers and their actions without having a web server set up - we only need to test that our instructions are being sent to MVC, not that it resulted in the correct HTTP response.
+
+In the background, the `IActionResult` is handling content negotiation (checking which content formats the request will accept in the accept header). If we're just returning the model to the client (i.e. not via a view to a HTML page), then the `IActionResult` will instruct MVC what format the model data should be serialized to.
+
+### Models
+
+### Views
+
+A view is a file on a file system by default. When a controller returns a ViewResult, MVC looks in the file system for a file by the name of the action it was returned from, and executes the view which produces the HTML. This HTML is sent back to the client to be rendered.
+
+As standard, in ASP.NET MVC a view must live inside a Views folder, and must either live in a subfolder by the controller name, or in a 'Shared' folder which will hold views shared across multiple controllers. For example, the home page view would live in "Views/Home/" and the file name would be "index.cshtml" to match the action name on the controller. 
+
+If MVC doesn't find a file at the directory it expects, it will throw an error.
+
+The `.cshtml` format is a Razor View. Razor is a markup syntax for embedding server-based code into our webpages and combines Razor markup, C# and HTML. `@` symbols either prefix C# code or prefix Razor reserved keywords. Razor then evaluates this and renders it as HTML.
+
+When we return the ViewResult in the controller, we can also provide a model object to inform the construction of the view. 
+
+**For example:**
+
+```CSharp
+public IActionResult Index()
+   {
+       var model = new Restaurant
+       {
+           Id = 1,
+           Name = "Scott's Pizza Place"
+       };
+
+       return View(model);
+   }
+```
+
+We can then reference this model in the view file to pull properties into HTML elements to be rendered.
+
+```cshtml
+@model OdeToFood.Models.Restaurant;
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+</head>
+<body>
+    <h1>@Model.Name</h1>
+    <div>The ID value is @Model.Id</div>
+</body>
+</html>
+```
+
 ### Routing
 
 This concerns how we get a HTTP request to the correct controller and how to invoke a public method within it. There are two types of routing used in ASP.NET - that I'm aware of so far (and they can be used in tandem):
@@ -194,3 +252,4 @@ public class AboutController
     }
 }
 ```
+
