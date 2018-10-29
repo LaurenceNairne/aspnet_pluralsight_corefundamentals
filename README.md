@@ -141,7 +141,7 @@ public IActionResult Index()
    }
 ```
 
-We can then reference this model in the view file to pull properties into HTML elements to be rendered. In the example below, we are pulling in the `Name` and `Id` property from our created model object. It's important to note that we have a line that reads `@model OdeToFood.Models.Restaurant;`. This line allows us to use IntelliSense to grab the properties on our model. Without it we could still use the properties and it would work, but it would mean we'd risk typos - so it's an efficiency measure if nothing else. 
+We can then reference this model in the view file to pull properties into HTML elements to be rendered. In the example below, we are pulling in the ` Model.Name` and `Model.Id` property from our created model object. It's important to note the line that reads `@model OdeToFood.Models.Restaurant;` in the beginning of our file. This Razor directive allows us to use IntelliSense to grab the properties on our model. Without it we could still type in and use the properties, which would work, but it would mean we'd risk typos. So it's an efficiency measure if nothing else. 
 
 ```cshtml
 @model OdeToFood.Models.Restaurant;
@@ -157,7 +157,6 @@ We can then reference this model in the view file to pull properties into HTML e
 </body>
 </html>
 ```
-
 
 ### Routing
 
