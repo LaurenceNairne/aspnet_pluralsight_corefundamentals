@@ -1,4 +1,4 @@
-﻿@model OdeToFood.Models.Restaurant;
+﻿@model OdeToFood.ViewModels.HomeIndexViewModel
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -6,7 +6,18 @@
     <title></title>
 </head>
 <body>
-    <h1>@Model.Name</h1>
-    <div>The ID value is @Model.Id</div>
+    <h1>@Model.CurrentMessage</h1>
+    <table>
+        @foreach (var restaurant in Model.Restaurants)
+        {
+            <tr>
+                <td>@restaurant.Id</td>
+                <td>@restaurant.Name</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@restaurant.Id">Explore</a>
+                </td>
+            </tr>
+        }
+    </table>
 </body>
 </html>
