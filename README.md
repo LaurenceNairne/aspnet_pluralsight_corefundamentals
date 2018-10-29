@@ -112,6 +112,8 @@ In the background, the `IActionResult` is handling content negotiation (checking
 
 ### Models
 
+//To update.
+
 ### Views
 
 A view is a file on a file system by default. When a controller returns a ViewResult, MVC looks in the file system for a file by the name of the action it was returned from, and executes the view which produces the HTML. This HTML is sent back to the client to be rendered.
@@ -139,7 +141,7 @@ public IActionResult Index()
    }
 ```
 
-We can then reference this model in the view file to pull properties into HTML elements to be rendered.
+We can then reference this model in the view file to pull properties into HTML elements to be rendered. In the example below, we are pulling in the `Name` and `Id` property from our created model object. It's important to note that we have a line that reads `@model OdeToFood.Models.Restaurant;`. This line allows us to use IntelliSense to grab the properties on our model. Without it we could still use the properties and it would work, but it would mean we'd risk typos - so it's an efficiency measure if nothing else. 
 
 ```cshtml
 @model OdeToFood.Models.Restaurant;
@@ -155,6 +157,7 @@ We can then reference this model in the view file to pull properties into HTML e
 </body>
 </html>
 ```
+
 
 ### Routing
 
