@@ -152,9 +152,7 @@ public HomeController(
 }
 ```
 
-In the above, we are registering the services as normal in the Startup class. We then have a constructor that requires a `IRestaurantData` and `IGreeter`. When MVC has to send the request to the HomeController, it will see the constructor, see it's dependencies and will check with the service provider for a definition of these services. On finding them, it will request instances (of the implementation classes of those services in the registration) to populate those required parameters, and in our case we then assign their values to our own private properties. These properties we then use in our actions as required.
-
-We can then access data from those services as required.
+In the above, we are registering the services as normal in the Startup class. We then have a constructor that requires a `IRestaurantData` and `IGreeter`. When MVC has to send the request to the HomeController, it will see the constructor, see it's dependencies and will check with the service provider for a definition of these services. On finding them, it will request instances (of the implementation classes of those services in the registration) to populate those required parameters, and in our case we then assign their values to our own private properties. We then use these properties in our actions as required.
 
 ### Models
 
