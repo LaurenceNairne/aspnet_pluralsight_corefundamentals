@@ -35,15 +35,27 @@ This method creates a webhost builder object, sets it to use a `Startup` object 
 
 The `Startup` class is constructed from two main parts: a `ConfigureServices()` method, and a `Configure()` method. The former handles the registration of the services that will be utilised by the application. The latter handles the implementation of those services.
 
+### Services 
+
 ### Registering services
 
-There are a whole host of services that come as standard with ASP.NET. These can be registered by using calling `services.AddService_Type` where 'Service_Type' is replaced. If we wish to add custom services (once we've set them up of course), we can use one of three options:
+There are a whole host of services that come as standard with ASP.NET. These can be registered by using calling `services.Add[Service_Name]` where 'Service_Name' is replaced with the required service name. If we wish to add custom services (once we've created them up of course), we can use one of three options:
 
 ```CSharp
 services.AddSingleton<Service_Type>(); //Only make one instance for the entire application
 services.AddTransient<Service_Type>(); //Create a new instance every time a user needs to access the service
 services.AddScoped<Service_Type>(); // Create a new instance for every HTTP request
 ```
+
+#### Creating services
+
+When creating a new service, it's good practice to provide an interface which the Startup class will use along side the implementation of the interface. This provides a great deal of flexibility because we can have different implementations of the interface and we don't need to change anything at the configuration end (every implementation of an interface must contain an implementation of all of it's methods), except the used implementation when registering the service in the `ConfigureServices()` method. We use the...
+
+```CSharp
+services.AddSingleton<TService, TImplementation>();
+```
+...form to pull in the interface and the desired implementation. We simply need to change the value for `TImplementation` when necessary. This is useful for stuff like data source switching. Currently I have a registered service `IRestaurantData` which is implemented by an `InMemoryRestaurantData` class - this class simply contains some hard coded data entries for testing purposes. When our app is ready for primetime, we can create a new implementation that points to a database of real data. We can even use different implementations dependent on the current running environment.
+
 ## Middleware
 
 In ASP.NET Core, middleware defines how an application responds to HTTP requests and how we display error information.
@@ -112,7 +124,9 @@ In the background, the `IActionResult` is handling content negotiation (checking
 
 ### Models
 
-//To update.
+A model in its simplest form is a class containing some properties. Controllers instantiate them appropriately when they receive a corresponding request.
+
+//More to come.
 
 ### Views
 
