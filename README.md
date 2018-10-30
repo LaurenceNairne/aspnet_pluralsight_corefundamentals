@@ -122,6 +122,40 @@ This makes testing easier, as we can test controllers and their actions without 
 
 In the background, the `IActionResult` is handling content negotiation (checking which content formats the request will accept in the accept header). If we're just returning the model to the client (i.e. not via a view to a HTML page), then the `IActionResult` will instruct MVC what format the model data should be serialized to.
 
+#### Accessing services in controllers
+
+We can use dependency injection to access services in a controller. We do this by creating a constructor of the controller with a required parameter that matches the service. In this project's case, we're using Interfaces matched to an implementation when adding a custom service, so the required parameter is the interface itself, not the implementation (because then we can swap out for a different implementation later).
+
+**For example:**
+
+```CSharp
+Startup.cs
+
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddSingleton<IGreeter, Greeter>();
+    services.AddScoped<IRestaurantData, InMemoryRestaurantData>();
+    services.AddMvc();
+}
+-----------------------------------------------------------
+HomeController.cs
+
+private IRestaurantData _restaurantData
+private IGreeter _greeter
+
+public HomeController(
+    IRestaurantData restaurantData,
+    IGreeter greeter)
+{
+    _restaurantData = restaurantData;
+    _greeter = greeter;
+}
+```
+
+In the above, we are registering the services as normal in the Startup class. We then have a constructor that requires a `IRestaurantData` and `IGreeter`. When MVC has to send the request to the HomeController, it will see the constructor, see it's dependencies and will check with the service provider for a definition of these services. On finding them, objects will be generated (from the implementation classes of those services in the registration) to populate those required parameters, and in our case we then assign their values to our own private properties. These properties we then use in our actions as required.
+
+What isn't 
+
 ### Models
 
 A model in its simplest form is a class containing some properties. Controllers instantiate them appropriately when they receive a corresponding request.
