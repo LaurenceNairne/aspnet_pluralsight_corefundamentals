@@ -124,7 +124,7 @@ In the background, the `IActionResult` is handling content negotiation (checking
 
 #### Accessing services in controllers
 
-We can use dependency injection to access services in a controller. We do this by creating a constructor of the controller with a required parameter that matches the service. In this project's case, we're using Interfaces matched to an implementation when adding a custom service, so the required parameter is the interface itself, not the implementation (because then we can swap out for a different implementation later).
+We can use dependency injection to access services in a controller. We do this by creating a constructor of the controller with a required parameter that matches the service. In this project's case, we're using Interfaces matched to an implementation when adding a custom service, so the required parameter is the interface itself, not the implementation (so we can swap out for a different implementation later).
 
 **For example:**
 
@@ -152,9 +152,9 @@ public HomeController(
 }
 ```
 
-In the above, we are registering the services as normal in the Startup class. We then have a constructor that requires a `IRestaurantData` and `IGreeter`. When MVC has to send the request to the HomeController, it will see the constructor, see it's dependencies and will check with the service provider for a definition of these services. On finding them, objects will be generated (from the implementation classes of those services in the registration) to populate those required parameters, and in our case we then assign their values to our own private properties. These properties we then use in our actions as required.
+In the above, we are registering the services as normal in the Startup class. We then have a constructor that requires a `IRestaurantData` and `IGreeter`. When MVC has to send the request to the HomeController, it will see the constructor, see it's dependencies and will check with the service provider for a definition of these services. On finding them, it will request instances (of the implementation classes of those services in the registration) to populate those required parameters, and in our case we then assign their values to our own private properties. These properties we then use in our actions as required.
 
-What isn't 
+We can then access data from those services as required.
 
 ### Models
 
