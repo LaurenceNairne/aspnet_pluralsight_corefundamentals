@@ -237,7 +237,9 @@ We can then reference this model in the view file to pull properties into HTML e
 
 #### Tag Helpers
 
-Tag helpers are just a way of writing C# code that follows the visual syntactic style of HTML elements to make them easier to read in-line. Before these were introduced, the norm was to use HTML Helpers that would follow the form of `@Html.*HelperName*`. For example:
+Tag helpers are just a way of writing C# code that follows the visual syntactic style of HTML elements to make them easier to read in-line. Before these were introduced, the norm was to use HTML Helpers that would follow the form of `@Html.*HelperName*`. 
+
+**For example:**
 
 ```CSharp
 @Html.ActionLink(
@@ -246,7 +248,7 @@ Tag helpers are just a way of writing C# code that follows the visual syntactic 
                  string ControllerToInstantiate, 
                  TModel RootValue)
 ```
-This isn't all to visually appealing and looks out of place in a file resembling HTML for the most part. The same functionality as the above using Tag Helpers would look like so:
+This isn't all too visually appealing and looks out of place in a file resembling HTML for the most part. The same functionality as the above using Tag Helpers would look like so:
 
 ```HTML
 <a asp-action="ActionName" 
@@ -255,6 +257,11 @@ This isn't all to visually appealing and looks out of place in a file resembling
      TextToDisplay
 </a>
 ```
+
+Both of the above options use the routing table, so if the format of the URL changes, they will still work (which is infinitely better than having a static link to a fixed URL in a view).
+
+In the case of the tag helper method, we see the last attribute `asp-route-[route_element_name]`. The last part is replace with whatever part of your route gives an identifier for the view you want to be rendered. In our case, it would be a page with the details of a specific restaurant on it.
+
 In order to use Tag Helpers, our project must have a Razor View Imports page. These files tell MVC and the Razor View engine how our views should behave and the various capabilities that views should have. In this file, we need to add an `@TagHelpers *, Microsoft.AspNetCore.Mvc.TagHelpers`
 
 ### Routing
