@@ -158,7 +158,11 @@ In the above, we are registering the services as normal in the Startup class. We
 
 A model in its simplest form is a class containing some properties. Controllers instantiate them appropriately when they receive a corresponding request.
 
-//More to come.
+#### Output ViewModels
+
+
+
+#### Input ViewModels
 
 ### Views
 
