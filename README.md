@@ -1,21 +1,17 @@
 # ASP.NET Core Fundamentals (Pluralsight course)
-
 This repo contains my work on the above course. I'm using this readme to document the points I've learned from completing the course for me to come back to - also to verify that I've understood the concepts and details.
 
 It's worth mentioning that this course uses ASP.NET Core 2.0 (not ASP.NET Framework, or Core 1.0) and that I began with an empty project - so no MVC service to begin with, though I believe I'll be adding that in later down the line.
 
 ## Program.cs
-
 Program.cs is one of two classes present when creating a new ASP.NET Core Web Application. Like a standard console application, it has a `Main()` method that is used to launch the app. In this case, it calls the `BuildWebHost()` to return an `IWebHost` implementation, then calls `Run()` to get the WebHost running.
 
 The `UseStartup<Class_Name>()` method registers the startup logic and instantiates an object of the class provided to it. It then invokes the two methods `ConfigureServices()` and `Configure()`.
 
 ### BuildWebHost()
-
 This method creates a webhost builder object, sets it to use a `Startup` object for dependencies, then builds it all.
 
 #### WebHost.CreateDefaultBuilder()
-
 - A webhost builder is an object that knows how to setup our web server environment.
 - Sets up our Kestrel (codenamed server that comes packaged with ASP.NET Core) server which will listen for HTTP connections
 - Sets up IIS Express integration (not really gone into depth with this as it's apparently useful for creating Intranet apps for users inside a company firewall on Windows - for passing credentials to the Kestrel server)
@@ -23,7 +19,6 @@ This method creates a webhost builder object, sets it to use a `Startup` object 
 - Creates an object that implements the `IConfiguration` interface which can be accessed throughout the app and allows us to retrieve config information via the interface
 
 ### IConfiguration service
-
 - Reads information from a few sources:
 -- applicationsettings.json file
 -- User secrets file
@@ -32,13 +27,11 @@ This method creates a webhost builder object, sets it to use a `Startup` object 
 - Matching variables in any of the above sources will be overwritten by the later source (e.g. a `greeting` variable in applicationsettings.json will be overwritten by a `greeting` variable in Environment variables
 
 ## Startup.cs
-
 The `Startup` class is constructed from two main parts: a `ConfigureServices()` method, and a `Configure()` method. The former handles the registration of the services that will be utilised by the application. The latter handles the implementation of those services.
 
 ### Services 
 
 ### Registering services
-
 There are a whole host of services that come as standard with ASP.NET. These can be registered by using calling `services.Add[Service_Name]` where 'Service_Name' is replaced with the required service name. If we wish to add custom services (once we've created them up of course), we can use one of three options:
 
 ```CSharp
@@ -48,7 +41,6 @@ services.AddScoped<Service_Type>(); // Create a new instance for every HTTP requ
 ```
 
 #### Creating services
-
 When creating a new service, it's good practice to provide an interface which the Startup class will use along side the implementation of the interface. This provides a great deal of flexibility because we can have different implementations of the interface and we don't need to change anything at the configuration end (every implementation of an interface must contain an implementation of all of it's methods), except the used implementation when registering the service in the `ConfigureServices()` method. We use the...
 
 ```CSharp
@@ -57,7 +49,6 @@ services.AddSingleton<TService, TImplementation>();
 ...form to pull in the interface and the desired implementation. We simply need to change the value for `TImplementation` when necessary. This is useful for stuff like data source switching. Currently I have a registered service `IRestaurantData` which is implemented by an `InMemoryRestaurantData` class - this class simply contains some hard coded data entries for testing purposes. When our app is ready for primetime, we can create a new implementation that points to a database of real data. We can even use different implementations dependent on the current running environment.
 
 ## Middleware
-
 In ASP.NET Core, middleware defines how an application responds to HTTP requests and how we display error information.
 
 - The order in which middleware appears in the `Configure()` method is significant.
@@ -70,7 +61,6 @@ In ASP.NET Core, middleware defines how an application responds to HTTP requests
 - The HTML response (with 200 OK status code) exits the server, over the network to the client waiting for it
 
 ## Working with environments and environment variables
-
 - ASP.NET Core understands the concept of runtime environments
 - The current environment can be scrutinised and set in the `Startup.Configure()` method
 - In this way, we can show different content depending on the environment we're currently in
@@ -89,7 +79,6 @@ This can be set in two places (they're actually the same but one is essentially 
 We can also access different `appsettings.json` files depending on the environment we're running in.To do so, we just need to create a new appsettings file where we suffix the filename with the corresponding environment name. For example `appsettings.Development.json`. As long as an environment exists by the name appended to it, that file will be used when necessary.
 
 ## Serving static files
-
 In order to use static files (such as pages, stylesheets, js files, etc), we need to implement a middleware by invoking `app.UseStaticFiles()`. This allows us to serve static content as required. It inspects the HTTP request, and when concerned it searches the filesystem inside the `wwwroot` folder for a file by the given name in the request. If found, it will stream it back to the user. If it doesn't find it, it will invoke the next middleware.
 
 When concerning HTML pages, we can set a default page that loads when we sent a request for the root directory by invoking the `app.UseDefaultFiles()`middleware. This looks at an incoming request, if it is for a directory like wwwroot, it will check for a default file. By default, `index.html` is the file this middleware looks for. If a custom file is required, a `DefaultFilesOptions` object can be brought in to provide a custom filename.
@@ -99,7 +88,6 @@ It's important to note that `UseDefaultFiles()` does not serve anything back to 
 Finally, `app.UseFileServer()` will install both of the above middlewares to cut down on keystrokes. For MVC, it's best to just use `UseStaticFiles()` because we only want to respond with a static file if the request explicitly matches a filepath.
 
 ## MVC Framework
-
 MVC design pattern separates concerns into three categories: Models, Views and Controllers. ASP.NET has a service to implement this design pattern.
 
 So at a top level, a controller receives the request and works out how to handle it. It instantiates a model object responsible for holding the information that the user has requested. In complex models, this could be several classes and therefore several objects. If we're building an API layer, the controller can return the model serialised as JSON, XML or some other data type required. If we're needing to render something to a HTML web page, the controller can select a view to render the model to. The View will receive the information from the model and use it to construct the HTML page.
@@ -111,7 +99,6 @@ In this project, `UseStaticFiles()` invokes `UseMvc()` if a static file is not r
 So we want an incoming request to be directed to a specific controller. We could have implemented `app.UseMvcWithDefaultRoute()`which means a `HomeController` class will receive a request to the root of the app by default. If this class contains an `Index()` method, this will be the default action used to determine the response returned to the view. However, using `app.UseMvc()` is more flexible, but requires more setup. To specify controller manually, we need to use routing.
 
 ### Controllers
-
 A controller simply has to create a model object (from a given model class) and decide what to do with it when a request is received.
 
 Within ASP.NET MVC there is a base Controller class that most controllers derive from. It contains a lot of useful methods - many of which return objects that derive from `IActionResult` interface. One such method is `Controller.View()`, which creates a `ViewResult` object that takes in a model to be rendered by the view on a HTML page.
@@ -123,7 +110,6 @@ This makes testing easier, as we can test controllers and their actions without 
 In the background, the `IActionResult` is handling content negotiation (checking which content formats the request will accept in the accept header). If we're just returning the model to the client (i.e. not via a view to a HTML page), then the `IActionResult` will instruct MVC what format the model data should be serialized to.
 
 #### Accessing services in controllers
-
 We can use dependency injection to access services in a controller. We do this by creating a constructor of the controller with a required parameter that matches the service. In this project's case, we're using Interfaces matched to an implementation when adding a custom service, so the required parameter is the interface itself, not the implementation (so we can swap out for a different implementation later).
 
 **For example:**
@@ -155,16 +141,58 @@ public HomeController(
 In the above, we are registering the services as normal in the Startup class. We then have a constructor that requires a `IRestaurantData` and `IGreeter`. When MVC has to send the request to the HomeController, it will see the constructor, see it's dependencies and will check with the service provider for a definition of these services. On finding them, it will request instances (of the implementation classes of those services in the registration) to populate those required parameters, and in our case we then assign their values to our own private properties. We then use these properties in our actions as required.
 
 ### Models
-A model in its simplest form is a class containing some properties. Controllers instantiate them appropriately when they receive a corresponding request.
+A model in its simplest form is a class containing some properties. Controllers instantiate them appropriately when they receive a corresponding request. They can come in slightly different forms depending on how they are supposed to be used. The author of the course (Scott Allen) separates models into two main archetypes: **Entity Models** and **View Models**.
+
+An Entity Model is an object that we persist into our database and it resembles the database schema. A View Model is an object to carry information between the controller and the view (also known as a Data Transfer Object). It is not persisted into the database, but it does copy information from entities and transfer information back into entities. 
+
+A standard Entity Model might look something like this:
+
+```CSharp
+public class Restaurant
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}   
+```
+
+For View Models, he breaks it down into two further subdivisions: **Output Models** and **Input Models**
 
 #### Output ViewModels
-Can consolidate several sources of data into one place for the sake of providing a single model to a view.
+These can provide a reference to several sources of data in one place. This is useful for when we want to then provide a model to a `ViewResult`. When working with a view, we then provide this to the `@model` directive and can then pull in everything we need as before.
+
+**For Example:**
+
+```CSharp
+HomeIndexViewModel.cs
+
+public class HomeIndexViewModel
+{
+    public IEnumerable<Restaurant> Restaurants { get; set; }
+    public string CurrentMessage { get; set; }
+}
+----------------------
+HomeController.cs
+
+...
+
+public IActionResult Index()
+{
+    var model = new HomeIndexViewModel();
+    model.Restaurants = _restaurantData.GetAll();
+    model.CurrentMessage = _greeter.GetMessageOfTheDay();
+
+    return View(model);
+}
+```
+
+In the above, we've provided a ViewModel with an `IEnumerable` of the type `Restaurant` called `Restaurants`. In other words, this property will hold a collection of `Restaurant` objects. We also provide a `CurrentMessage` property that expects a string type value. In the `HomeController` we then create a model object and assign to it a new `HomeIndexViewModel` object. We then assign values to the `Restaurants` and `CurrentMessage` properties by pulling them from the respective services `IRestaurantData` and `IGreeter`, then provide this model to the `ViewResult` when returning `View(model)`.
+
+At face value, this might seem like a lot of steps to do something fairly straight forward, but it makes it easier to test by separating concerns into different places in the source code. We handle the definition of what a restaurant is separately from the creation, editing and deletion of restaurants, and then separate the collecting of existing restaurants from the handling of how we then present this collection back to the user. If we need to change something, so long as we're smart about it we can find where to make the change with minimal effort.
 
 #### Input ViewModels
-
+//Come back to this when I've finished the section on creating a database entry.
 
 ### Views
-
 A view is a file on a file system by default. When a controller returns a ViewResult, MVC looks in the file system for a file by the name of the action it was returned from, and executes the view which produces the HTML. This HTML is sent back to the client to be rendered.
 
 As standard, in ASP.NET MVC a view must live inside a Views folder, and must either live in a subfolder by the controller name, or in a 'Shared' folder which will hold views shared across multiple controllers. For example, the home page view would live in "Views/Home/" and the file name would be "index.cshtml" to match the action name on the controller. 
@@ -208,11 +236,9 @@ We can then reference this model in the view file to pull properties into HTML e
 ```
 
 ### Routing
-
 This concerns how we get a HTTP request to the correct controller and how to invoke a public method within it. There are two types of routing used in ASP.NET - that I'm aware of so far (and they can be used in tandem):
 
 #### Convention-based routing
-
 This option defines templates for how MVC should get a controller and action name from a URL in `Startup.Configure()`.
 
 If we were to leave `app.UseMvc()` as it is, it wouldn't know how to handle any requests. It requires an overload to take an `Action<IRouteBuilder>`. In this case, this takes the form of a private `ConfigureRoutes(IRouteBuilder routeBuilder)` method. It is in this that we will define our routing template.
@@ -251,7 +277,6 @@ public class Startup
 ```
 
 #### Attribute-based routing
-
 This option applies C# attributes to the controllers (classes) and actions (public methods) themselves which lets MVC know when to call a specific action.
 
 While this can be used in combination with the convention-based routing, it gives more flexibility and overrides the convention when used on a specific controller.
