@@ -170,7 +170,8 @@ public class HomeIndexViewModel
     public IEnumerable<Restaurant> Restaurants { get; set; }
     public string CurrentMessage { get; set; }
 }
-----------------------
+```
+```
 HomeController.cs
 
 ...
@@ -223,17 +224,45 @@ public class InMemoryRestaurantData : IRestaurantData
 ```
 
 ```cshtml
+Details.cshtml
+
 @model OdeToFood.Models.Restaurant
 
 <h1>@Model.Name</h1>
 <div>...details...</div>
 <a asp-action="Index" asp-controller="Home">Home</a>
 ```
+```cshtml
+Index.html
+
+@model OdeToFood.ViewModels.HomeIndexViewModel
+
+<...>
+<body>
+    <h1>@Model.CurrentMessage</h1>
+    <table>
+        @foreach (var restaurant in Model.Restaurants)
+        {
+            <tr>
+                <td>@restaurant.Id</td>
+                <td>@restaurant.Name</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@restaurant.Id">Explore</a>                   
+                </td>
+            </tr>
+        }
+    </table>
+    <a asp-action="Create">Create Restaurant</a>
+</body>
+</html>
+```
 In the above, our `Detail` action assigns the value of the Restaurant at the given id by invoking the `Get(int id)` method on an implementation of `IRestaurantData`. Our LINQ query is just saying give me the first item where the restaurant ID matches the ID in the request.
 
 We perform a null check on the model (because the `FirstOrDefault()` method returns `null` if it doesn't find a match), then return the corresponding view with the generated model as a parameter.
 
 In the detail we simply display the given model's name, some static text, and then provide a link back to the Index view which renders our home page.
+
+Finally, on the `Index` view, we add a column to the table with our restaurants, and populate it with a link for each restaurant using tag helpers (see section on [tag helpers](#tag-helpers)). We use the `asp-route` tag helper to tell MVC what the name of the element to use is (in this case it is `id`) and then assign `restaurant.Id` as it's value. This means that when the link for a restaurant is clicked, the request will have the URL `/Details/{Id of restaurant}` and MVC will be able to invoke the correct action with the correct value in the `id` parameter.
 
 ### Views
 A view is a file on a file system by default. When a controller returns a ViewResult, MVC looks in the file system for a file by the name of the action it was returned from, and executes the view which produces the HTML. This HTML is sent back to the client to be rendered.
