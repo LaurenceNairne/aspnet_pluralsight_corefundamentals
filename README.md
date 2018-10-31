@@ -192,7 +192,7 @@ At face value, this might seem like a lot of steps to do something fairly straig
 #### Input View Models
 An input view model takes some form of input from the user which is used by a view to decide how to render a page. A simple form of this would be providing a detailed view of a single restaurant from the collection. To achieve this, we'd need to have an action that pulled in some identifying parameter that would tell MVC which restaurant we wanted to view on the new page. When an action has a parameter, MVC will do everything it can to populate it with a value. It will first look for a matching property in the routing table, and also checks any query strings in the request as well (but routing will take precendence).
 
-Luckily, our restaurants all come with an ID property associated with them, and when we set up our convention-based routing (see [create an anchor](#routing)) we provided the option to have an `{id?}` in the request URL. We just need to create a view that matches the name of the action it's associated with, and pull in a generated model object assigned with the restaurant data at the given id.
+Luckily, our restaurants all come with an ID property associated with them, and when we set up our convention-based routing (see the section on [routing](#routing)) we provided the option to have an `{id?}` in the request URL. We just need to create a view that matches the name of the action it's associated with, and pull in a generated model object assigned with the restaurant data at the given id.
 
 **To illustrate this:**
 
