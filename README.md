@@ -235,6 +235,28 @@ We can then reference this model in the view file to pull properties into HTML e
 </html>
 ```
 
+#### Tag Helpers
+
+Tag helpers are just a way of writing C# code that follows the visual syntactic style of HTML elements to make them easier to read in-line. Before these were introduced, the norm was to use HTML Helpers that would follow the form of `@Html.*HelperName*`. For example:
+
+```CSharp
+@Html.ActionLink(
+                 string TextToDisplay, 
+                 string ActionToInvoke, 
+                 string ControllerToInstantiate, 
+                 TModel RootValue)
+```
+This isn't all to visually appealing and looks out of place in a file resembling HTML for the most part. The same functionality as the above using Tag Helpers would look like so:
+
+```HTML
+<a asp-action="ActionName" 
+   asp-controller="ControllerName" 
+   asp-route-[route_element_name]="ValueAtGivenRouteElement">
+     TextToDisplay
+</a>
+```
+In order to use Tag Helpers, our project must have a Razor View Imports page. These files tell MVC and the Razor View engine how our views should behave and the various capabilities that views should have. In this file, we need to add an `@TagHelpers *, Microsoft.AspNetCore.Mvc.TagHelpers`
+
 ### Routing
 This concerns how we get a HTTP request to the correct controller and how to invoke a public method within it. There are two types of routing used in ASP.NET - that I'm aware of so far (and they can be used in tandem):
 
