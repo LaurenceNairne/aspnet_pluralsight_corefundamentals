@@ -155,14 +155,13 @@ public HomeController(
 In the above, we are registering the services as normal in the Startup class. We then have a constructor that requires a `IRestaurantData` and `IGreeter`. When MVC has to send the request to the HomeController, it will see the constructor, see it's dependencies and will check with the service provider for a definition of these services. On finding them, it will request instances (of the implementation classes of those services in the registration) to populate those required parameters, and in our case we then assign their values to our own private properties. We then use these properties in our actions as required.
 
 ### Models
-
 A model in its simplest form is a class containing some properties. Controllers instantiate them appropriately when they receive a corresponding request.
 
 #### Output ViewModels
-
-
+Can consolidate several sources of data into one place for the sake of providing a single model to a view.
 
 #### Input ViewModels
+
 
 ### Views
 
