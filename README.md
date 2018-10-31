@@ -157,7 +157,7 @@ public class Restaurant
 
 For View Models, he breaks it down into two further subdivisions: **Output Models** and **Input Models**
 
-#### Output ViewModels
+#### Output View Models
 These can provide a reference to several sources of data in one place. This is useful for when we want to then provide a model to a `ViewResult`. When working with a view, we then provide this to the `@model` directive and can then pull in everything we need as before.
 
 **For Example:**
@@ -189,8 +189,51 @@ In the above, we've provided a ViewModel with an `IEnumerable` of the type `Rest
 
 At face value, this might seem like a lot of steps to do something fairly straight forward, but it makes it easier to test by separating concerns into different places in the source code. We handle the definition of what a restaurant is separately from the creation, editing and deletion of restaurants, and then separate the collecting of existing restaurants from the handling of how we then present this collection back to the user. If we need to change something, so long as we're smart about it we can find where to make the change with minimal effort.
 
-#### Input ViewModels
-//Come back to this when I've finished the section on creating a database entry.
+#### Input View Models
+An input view model takes some form of input from the user which is used by a view to decide how to render a page. A simple form of this would be providing a detailed view of a single restaurant from the collection. To achieve this, we'd need to have an action that pulled in some identifying parameter that would tell MVC which restaurant we wanted to view on the new page. When an action has a parameter, MVC will do everything it can to populate it with a value. It will first look for a matching property in the routing table, and also checks any query strings in the request as well (but routing will take precendence).
+
+Luckily, our restaurants all come with an ID property associated with them, and when we set up our convention-based routing (see [create an anchor](#routing)) we provided the option to have an `{id?}` in the request URL. We just need to create a view that matches the name of the action it's associated with, and pull in a generated model object assigned with the restaurant data at the given id.
+
+**To illustrate this:**
+
+```CSharp
+HomeController.cs
+
+public IActionResult Details(int id)
+{
+    var model = _restaurantData.Get(id);
+    if (model == null)
+    {
+        return RedirectToAction(nameof(Index));
+    }
+    return View(model);
+}
+```
+```CSharp
+public class InMemoryRestaurantData : IRestaurantData
+{
+    private List<Restaurant> _restaurants;
+
+    {...}
+
+    public Restaurant Get(int id)
+    {
+        return _restaurants.FirstOrDefault(r => r.Id == id);
+    }
+```
+
+```cshtml
+@model OdeToFood.Models.Restaurant
+
+<h1>@Model.Name</h1>
+<div>...details...</div>
+<a asp-action="Index" asp-controller="Home">Home</a>
+```
+In the above, our `Detail` action assigns the value of the Restaurant at the given id by invoking the `Get(int id)` method on an implementation of `IRestaurantData`. Our LINQ query is just saying give me the first item where the restaurant ID matches the ID in the request.
+
+We perform a null check on the model (because the `FirstOrDefault()` method returns `null` if it doesn't find a match), then return the corresponding view with the generated model as a parameter.
+
+In the detail we simply display the given model's name, some static text, and then provide a link back to the Index view which renders our home page.
 
 ### Views
 A view is a file on a file system by default. When a controller returns a ViewResult, MVC looks in the file system for a file by the name of the action it was returned from, and executes the view which produces the HTML. This HTML is sent back to the client to be rendered.
@@ -207,15 +250,15 @@ When we return the ViewResult in the controller, we can also provide a model obj
 
 ```CSharp
 public IActionResult Index()
-   {
-       var model = new Restaurant
-       {
-           Id = 1,
-           Name = "Scott's Pizza Place"
-       };
+{
+    var model = new Restaurant
+    {
+        Id = 1,
+        Name = "Scott's Pizza Place"
+    };
 
-       return View(model);
-   }
+    return View(model);
+}
 ```
 
 We can then reference this model in the view file to pull properties into HTML elements to be rendered. In the example below, we are pulling in the ` Model.Name` and `Model.Id` property from our created model object. It's important to note the line that reads `@model OdeToFood.Models.Restaurant;` in the beginning of our file. This Razor directive allows us to use IntelliSense to grab the properties on our model. Without it we could still type in and use the properties, which would work, but it would mean we'd risk typos. So it's an efficiency measure if nothing else. 
