@@ -3,8 +3,15 @@
 
 <h1>Create</h1>
 <form  method="post">
-    <input asp-for="Name" />
-    <select asp-for="Cuisine" asp-items="@Html.GetEnumSelectList<CuisineOrigin>()">
-    </select>
+    <div>
+        <label asp-for="Name"></label>
+        <input asp-for="Name" />
+        <span asp-validation-for="Name"></span>
+    </div>
+    <div>
+        <label asp-for="Cuisine"></label>
+        <select asp-for="Cuisine"
+                asp-items="@Html.GetEnumSelectList<CuisineOrigin>()"></select>
+    </div>
     <input type="submit" name="Save" value="Save" />
 </form>
