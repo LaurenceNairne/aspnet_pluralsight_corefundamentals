@@ -442,3 +442,7 @@ public class AboutController
 There are occasions where it's appropriate to have two actions with the same name. For example, if we're providing the functionality to enter some data into a form that will be stored in a database somewhere, we might have a Create action that takes the user to the Create view, and we might have a Create action that deals with the storing of the data entered by the user.
 
 In such cases, we're dealing with one action that is a HTTP GET, and one that is a HTTP POST. If we left the two actions as they are, we'd receive an error because MVC doesn't know which of the two to invoke. To solve this, we have two attributes: `[HttpGet]` and `[HttpPost]`. When one is used, we're saying "this action can only support this type of request".
+
+## GET - Redirect - Post Pattern
+
+//To be filled out tomorrow.
