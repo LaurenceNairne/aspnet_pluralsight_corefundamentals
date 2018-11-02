@@ -443,6 +443,36 @@ There are occasions where it's appropriate to have two actions with the same nam
 
 In such cases, we're dealing with one action that is a HTTP GET, and one that is a HTTP POST. If we left the two actions as they are, we'd receive an error because MVC doesn't know which of the two to invoke. To solve this, we have two attributes: `[HttpGet]` and `[HttpPost]`. When one is used, we're saying "this action can only support this type of request".
 
-## GET - Redirect - Post Pattern
+## POST - Redirect - GET Pattern
 
-//To be filled out tomorrow.
+This design pattern is pretty straight forward. We begin with a HTTP POST which is comprised of some submitted input data from the user. When the user submits this data it is posted back to the server, then we redirect the user to a different URL and retrieve this data in a HTTP GET to render it to the view.
+
+As an example of bad practice, we might be inclined to simply return the Details view of the new restaurant immediately once the user clicks the save button like so:
+
+```CSharp
+public IActionResult Create(RestaurantEditModel model)
+{
+    if (ModelState.IsValid)
+    {
+        var newRestaurant = new Restaurant();
+        newRestaurant.Name = model.Name;
+        newRestaurant.Cuisine = model.Cuisine;
+
+        newRestaurant = _restaurantData.Add(newRestaurant);
+        
+        return View("Details", newRestaurant);
+    }
+    else
+    {
+        return View();
+    }
+}
+```
+The trouble with this is that we end up returning the view to the current request - i.e. the URL to which we're returning the view is "/Home/Create". The biggest problem with this approach is that if we then refresh the page, the submitted data is then resubmitted creating a duplicate entry. Most modern browsers give a warning when a HTTP POST is about to be resent, but this should be rectified on the application side to prevent this issue in the first place.
+
+We can instead amend the return statement to the following:
+
+```CSharp
+return RedirectToAction(nameof(Details), new { id = newRestaurant.Id });
+```
+This is MVC's simple approach to implementing the `GET` part of the design pattern. `RedirectToAction` takes in an action name and an object for the route value (this determines the id part of the redirect URL). We've been using `Details()` to handle a detail view of each restaurant, so we provide this as the action, then create an anonymous object with a property `id` and assign it the value of `newRestaurant.Id`. Simply put, the URL will end up as /Home/Details/*IdOfNewRestaurant*.
