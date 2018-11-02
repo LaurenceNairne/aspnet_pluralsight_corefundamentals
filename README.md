@@ -481,6 +481,68 @@ This is MVC's simple approach to implementing the `GET` part of the design patte
 
 For want of a better place to put these parts, I'm just jotting all security related items in this section.
 
-### Overposting
+### Mass assignment/Overposting
+This is an attack where values are set on properties in the server that a developer does not expect. It's often seen in sites built on the MVC design pattern during model binding, where a form provides fields for a user to enter values for a set of properties bound to a model. If the model contains other fields that are not included in the form, malicious users could still access those properties and provide unwanted values.
 
-### Cross-site forgery requests 
+**For example:**
+
+```CSharp
+public class Restaurant
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public CuisineOrigin Cuisine { get; set; }
+}
+```
+```CSharp
+[HttpPost]
+public IActionResult Create(Restaurant model)
+{
+    if (ModelState.IsValid)
+    {
+        var newRestaurant = new Restaurant();
+        newRestaurant.Name = model.Name;
+        newRestaurant.Cuisine = model.Cuisine;
+
+        newRestaurant = _restaurantData.Add(newRestaurant);
+        
+        return View("Details", newRestaurant);
+    }
+    else
+    {
+        return View();
+    }
+}
+```
+```cshtml
+@using OdeToFood.Models
+@model Restaurant
+
+<h1>Create</h1>
+<form  method="post">
+    <div>
+        <label asp-for="Name"></label>
+        <input asp-for="Name" />
+        <span asp-validation-for="Name"></span>
+    </div>
+    <div>
+        <label asp-for="Cuisine"></label>
+        <select asp-for="Cuisine"
+                asp-items="@Html.GetEnumSelectList<CuisineOrigin>()"></select>
+    </div>
+    <input type="submit" name="Save" value="Save" />
+</form>
+```
+In the above, we have a `Restaurant` model with three properties: Id, Name and Cuisine. We then have a HttpPost `Create` action on a controller that takes in a Restaurant object and handles adding the submission to the server. Finally we have our view that will present two form fields to the user: Name and Cuisine.
+
+By normal standards, the user will only be able to fill in those two fields, which is great because we want the Id to be automatically generated to ensure it's unique. However, we could manipulate the HTML or use a tool to add a value for that Id property regardless of what's available in the page.
+
+To avoid this issue, there are many solutions. My favourite currently is separating logic into a binding/input model and a view/output model.
+
+It makes logical sense too if we look at it from a separation of concerns point of view. The output model contains all properties that should be displayed, and the input model contains only those properties that are required for binding. The obvious drawback to this option is that it requires duplication of effort and any changes need to be performed in two places. We could amend this to make the input model a base class that the output model could derive from, in which case we only need to add the extra properties that should not be edited.
+
+N.B. I've seen criticism of this approach and various suggestions of the best way to approach the problem. Further reading here: https://andrewlock.net/preventing-mass-assignment-or-over-posting-in-asp-net-core/
+
+### Cross-site forgery requests
+
+//To be filled out.
