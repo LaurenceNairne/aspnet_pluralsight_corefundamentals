@@ -476,3 +476,11 @@ We can instead amend the return statement to the following:
 return RedirectToAction(nameof(Details), new { id = newRestaurant.Id });
 ```
 This is MVC's simple approach to implementing the `GET` part of the design pattern. `RedirectToAction` takes in an action name and an object for the route value (this determines the id part of the redirect URL). We've been using `Details()` to handle a detail view of each restaurant, so we provide this as the action, then create an anonymous object with a property `id` and assign it the value of `newRestaurant.Id`. Simply put, the URL will end up as /Home/Details/*IdOfNewRestaurant*.
+
+## Security concerns
+
+For want of a better place to put these parts, I'm just jotting all security related items in this section.
+
+### Overposting
+
+### Cross-site forgery requests 
