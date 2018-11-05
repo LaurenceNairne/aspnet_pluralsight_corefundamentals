@@ -528,7 +528,8 @@ public IActionResult Create(Restaurant model)
     <div>
         <label asp-for="Cuisine"></label>
         <select asp-for="Cuisine"
-                asp-items="@Html.GetEnumSelectList<CuisineOrigin>()"></select>
+                asp-items="@Html.GetEnumSelectList<CuisineOrigin>()">
+        </select>
     </div>
     <input type="submit" name="Save" value="Save" />
 </form>
