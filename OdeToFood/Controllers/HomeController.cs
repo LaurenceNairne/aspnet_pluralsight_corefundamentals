@@ -5,6 +5,7 @@ using OdeToFood.ViewModels;
 
 namespace OdeToFood.Controllers
 {
+    [AutoValidateAntiforgeryToken]
     public class HomeController : Controller
     {
         private IRestaurantData _restaurantData;
@@ -20,10 +21,11 @@ namespace OdeToFood.Controllers
 
         public IActionResult Index()
         {
-            var model = new HomeIndexViewModel();
-            model.Restaurants = _restaurantData.GetAll();
-            model.CurrentMessage = _greeter.GetMessageOfTheDay();
-
+            var model = new HomeIndexViewModel
+            {
+                Restaurants = _restaurantData.GetAll(),
+                CurrentMessage = _greeter.GetMessageOfTheDay()
+            };
             return View(model);
         }
 
@@ -44,14 +46,15 @@ namespace OdeToFood.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public IActionResult Create(RestaurantEditModel model)
         {
             if (ModelState.IsValid)
             {
-                var newRestaurant = new Restaurant();
-                newRestaurant.Name = model.Name;
-                newRestaurant.Cuisine = model.Cuisine;
+                var newRestaurant = new Restaurant
+                {
+                    Name = model.Name,
+                    Cuisine = model.Cuisine
+                };
 
                 newRestaurant = _restaurantData.Add(newRestaurant);
 
