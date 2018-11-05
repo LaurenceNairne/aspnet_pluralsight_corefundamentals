@@ -443,7 +443,7 @@ There are occasions where it's appropriate to have two actions with the same nam
 
 In such cases, we're dealing with one action that is a HTTP GET, and one that is a HTTP POST. If we left the two actions as they are, we'd receive an error because MVC doesn't know which of the two to invoke. To solve this, we have two attributes: `[HttpGet]` and `[HttpPost]`. When one is used, we're saying "this action can only support this type of request".
 
-#### Input validation
+### Input validation
 When users enter information into a form in a page view, we want to be sure they are entering information correctly. It may be that they're entering a password that requires specific character types, or a text field that has a max and min character count. It could also be that the field is simply "required" and can't be left empty.
 
 In ASP.NET, form validation is a three part process: setting validation attributes on properties in a model, validating the user inputs on the form against those attributes and informing the user if there are problems in the page view. 
