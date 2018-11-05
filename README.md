@@ -343,6 +343,7 @@ In order to use Tag Helpers, our project must have a Razor View Imports page. Th
 - `asp-for` Used in form elements to connect a particular input by the user to a property in the currently associated model
 - `asp-item` Used in select form elements to provide a list of options of a type that matches the connected model property
 - `asp-route-*route_element_name*` Used in an <a> tag to define the element of the route that the given action should use as its parameter (*route_element_name* is replaced with the actual name of the element in the request that should be used as the value)
+- `asp-validation-for` Used in a span element on a form to do a validation check against validation requirements in the referenced model, if errors are found, the error string will be displayed in the span.
 
 ### Routing
 This concerns how we get a HTTP request to the correct controller and how to invoke a public method within it. There are two types of routing used in ASP.NET - that I'm aware of so far (and they can be used in tandem):
