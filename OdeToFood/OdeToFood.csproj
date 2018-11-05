@@ -5,21 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" 
-                      Version="2.0.9" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <DotNetCliToolReference 
-        Include="Microsoft.EntityFrameworkCore.Tools.DotNet"
-        Version="2.0.9">
-    </DotNetCliToolReference>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.9" />
   </ItemGroup>
   
 
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties 
-        appsettings_1Development_1json__JSONSchema="http://json.schemastore.org/appsettings" />
+      <UserProperties appsettings_1Development_1json__JSONSchema="http://json.schemastore.org/appsettings" />
     </VisualStudio></ProjectExtensions>
 </Project>
