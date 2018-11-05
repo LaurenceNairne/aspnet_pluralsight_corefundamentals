@@ -545,4 +545,26 @@ N.B. I've seen criticism of this approach and various suggestions of the best wa
 
 ### Cross-site forgery requests
 
-//To be filled out.
+In it's simplest terms, cross-site forgery requests happen when a user is signed into a legitimate site (e.g. their bank account), then they access a malicious site which attempts to send a request to the former site using the user's authenticated session. There are many ways to deal with this (and some specific to different frameworks), but I'm just going to talk about the one I've encountered so far.
+
+From ASP.NET Core 2.0, whenever a form exists on a Razor View with `method="post"` (all forms should be posted), `FormTagHelper` injects a hidden `RequestVerificationToken` into a child input element.
+
+**For example:**
+
+```html
+<form method="post">
+    <...>
+    </...>
+    <input type="submit" name="Save" value="Save">
+    <input name="__RequestVerificationToken" type="hidden" value="CfDJ8NrAkS ... s2-m9Yw">
+</form>
+```
+Prior to 2.0, anti-forgery tokens were auto-generated when using the IHtmlHelper.BeginForm method and they can be added explicitly using the `@Html.AntiForgeryToken` helper as a child of a form element.
+
+We can validate this token in a number of ways. Before we get to that, it's important to note that ASP.NET doesn't automagically generate anti-forgery tokens for safe requests (GET, HEAD, OPTIONS, TRACE). This could leave us with a predicament if we were to use a `[ValidateAntiForgeryToken]` attribute. If we use it at controller (class) level, it would reject all of our safe requests because it doesn't find a token on them. If we're using it on individual actions, this leaves us open to missing a POST action and leaves us exposed to a CSRF attack. Now we could use this attribute at the class level, then apply an `[IgnoreAntiForgeryToken]` attribute to each safe action that doesn't need validation, but that also leaves us at the risk of missing one, or adding it to a POST request accidentally.
+
+Thankfully, reading the Microsoft docs, their recommended approach is to use an `[AutoValidateAntiforgeryToken]` attribute on the controller in question. It checks all POST requests for a token, but ignores all safe requests as if we'd correctly assigned them with the `[IgnoreAntiForgeryToken]` attribute.
+
+It's very important to note that this only works if all of our forms requiring input from the user use POST methods. If they use safe methods, it will be overlooked in the validation and we're open to attack.
+
+A final note to say that it's possible to add these tokens at a global application level, but I'm not yet sure how.
