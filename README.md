@@ -443,6 +443,71 @@ There are occasions where it's appropriate to have two actions with the same nam
 
 In such cases, we're dealing with one action that is a HTTP GET, and one that is a HTTP POST. If we left the two actions as they are, we'd receive an error because MVC doesn't know which of the two to invoke. To solve this, we have two attributes: `[HttpGet]` and `[HttpPost]`. When one is used, we're saying "this action can only support this type of request".
 
+#### Input validation
+When users enter information into a form in a page view, we want to be sure they are entering information correctly. It may be that they're entering a password that requires specific character types, or a text field that has a max and min character count. It could also be that the field is simply "required" and can't be left empty.
+
+In ASP.NET, form validation is a three part process: setting validation attributes on properties in a model, validating the user inputs on the form against those attributes and informing the user if there are problems in the page view. 
+
+In the below example we have a model that has a required `Name` field that cannot contain more than 100 characters.
+
+```csharp
+public class RestaurantEditModel
+{
+    [Required, MaxLength(100)]
+    public string Name { get; set; }
+    public CuisineOrigin Cuisine { get; set; }
+}
+```
+
+MVC has a ModelState class which holds information about the transaction of model binding between the model and the action in question. It contains any errors that are flagged during this process, prompted by the validation attributes on properties within the model. Given the above model, we can check if the user has entered any value for the `Name` property, and that it's less than 100 characters. We then decide what to do if either of these requirements are not met during the binding process. This is done using `ModelState.IsValid`. It returns true if no errors are found, and false if one or more is.
+
+In the below example on our controller, our POST Create action does a check on `IsValid`, carries out our submission behaviour if true, and just returns the view again if not.
+
+```CSharp
+[HttpPost]
+public IActionResult Create(RestaurantEditModel model)
+{
+    if (ModelState.IsValid)
+    {
+        var newRestaurant = new Restaurant
+        {
+            Name = model.Name,
+            Cuisine = model.Cuisine
+        };
+
+        newRestaurant = _restaurantData.Add(newRestaurant);
+
+        return RedirectToAction(nameof(Details), new { id = newRestaurant.Id });
+    }
+    else
+    {
+        return View();
+    }
+}
+```
+
+Finally, in the Create view itself we then include `<span>` elements that contain the `asp-validation-for` tag helpers for those fields that we've set validation requirements on in the model. The Razor View engine will know if errors are returned, and will display those errors in that `<span>`.
+
+```cshtml
+@using OdeToFood.Models
+@model Restaurant
+
+<h1>Create</h1>
+<form  method="post">
+    <div>
+        <label asp-for="Name"></label>
+        <input asp-for="Name" />
+        <span asp-validation-for="Name"></span>
+    </div>
+    <div>
+        <label asp-for="Cuisine"></label>
+        <select asp-for="Cuisine"
+                asp-items="@Html.GetEnumSelectList<CuisineOrigin>()"></select>
+    </div>
+    <input type="submit" name="Save" value="Save" />
+</form>
+```
+
 ## POST - Redirect - GET Pattern
 
 This design pattern is pretty straight forward. We begin with a HTTP POST which is comprised of some submitted input data from the user. When the user submits this data it is posted back to the server, then we redirect the user to a different URL and retrieve this data in a HTTP GET to render it to the view.
