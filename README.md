@@ -508,6 +508,66 @@ Finally, in the Create view itself we then include `<span>` elements that contai
     <input type="submit" name="Save" value="Save" />
 </form>
 ```
+## Entity Framework
+N.B. We're using EF Core in this project.
+
+From the docs, EF Core is a lightweight, extensible and cross-platform version of the popular Entity Framework data access technology. It's essentially a shortcut to data access, serving as an object-relational mapper (ORM) in this capacity.
+
+We start by creating a class that derives from the base `DbContext` provided by EF. A `DbContext` provides access to a single database. This can be remapped to different databases in the application's lifetime, but it logically maps to a specific database with a schema that the `DbContext` class understands.
+
+In our project we have an `OdeToFoodDbContext`:
+
+```csharp
+public class OdeToFoodDbContext : DbContext
+{
+    public OdeToFoodDbContext(DbContextOptions options) 
+        : base(options)
+    {
+
+    }
+
+    public DbSet<Restaurant> Restaurants { get; set; }
+}
+```
+We create a constructor that takes in a `DbContextOptions` object to allow it to connect to different databases. This object can give us several things, but importantly it handles the connection strings to the database. We pass these options to the base `DbContext` which will handle looking at the options and setting up connections.
+
+We then provide a `DbSet<T>` for each Entity Model that should map to a table in the database. In our case we just have `Restaurant`. By default, naming our `DbSet<T>` "Restaurants" will prompt EF to look for a table by the same name in the database. This can be reconfigured.
+
+At this point we could create an instance of this context class inside a controller or register our context as a service in Startup to be injected in whatever components require it. In our case we just abstract it away behind an implementation of our `IRestaurantData` service we set up previously.
+
+```csharp
+public class SqlRestaurantData : IRestaurantData
+{
+    private OdeToFoodDbContext _context;
+
+    public SqlRestaurantData(OdeToFoodDbContext context)
+    {
+        _context = context;
+    }
+
+    public Restaurant Add(Restaurant restaurant)
+    {
+        _context.Restaurants.Add(restaurant);
+        _context.SaveChanges();
+        return restaurant;
+    }
+
+    public Restaurant Get(int id)
+    {
+        return _context.Restaurants.FirstOrDefault(r => r.Id == id);
+    }
+
+    public IEnumerable<Restaurant> GetAll()
+    {
+        return _context.Restaurants.OrderBy(r => r.Name);
+    }
+}
+```
+As with our previous in memory implementation of `IRestaurantData`, we're contractually obliged to implement all of its methods. We create a constructor that pulls in a `OdeToFoodDbContext` as it's parameter, then inside this we assign the value of the parameter to our own private `OdeToFoodDbContext` property for use elsewhere in the class.
+
+When implementing our `Add()` method, we call the `Add()` method on our `DbSet<Restaurant>`. This prompts EF to track it for inserting into the database later. It will not be added until we call the `SaveChanges()` method on our context object. This separation allows us to do things like batching several additions into a single insertion operation.
+
+By default, an `Id` property on the entity model will become an `Id` column in our database table and with this column, the Ids can be generated automatically. When the new model object is inserted into the database table, EF will grab the generated id value and assign this to the `Id` property on the model object. That way, when we return the the object at the end of the `Add()` method, it's `Id` prop is not null.
 
 ## POST - Redirect - GET Pattern
 
