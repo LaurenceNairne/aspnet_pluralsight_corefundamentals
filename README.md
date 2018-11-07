@@ -695,3 +695,8 @@ Thankfully, reading the Microsoft docs, their recommended approach is to use an 
 It's very important to note that this only works if all of our forms requiring input from the user use POST methods. If they use safe methods, it will be overlooked in the validation and we're open to attack.
 
 A final note to say that it's possible to add these tokens at a global application level, but I'm not yet sure how.
+
+## Research topics to follow on from this project
+- Unit of Work and Repository design patterns in relation to DbContext
+- Differences between `IEnumerable<T>` and `IQueriable<T>` with regards to large datasets
+- Treating DbContext as a unit of work
