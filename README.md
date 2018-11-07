@@ -569,6 +569,18 @@ When implementing our `Add()` method, we call the `Add()` method on our `DbSet<R
 
 By default, an `Id` property on the entity model will become an `Id` column in our database table and with this column, the Ids can be generated automatically. When the new model object is inserted into the database table, EF will grab the generated id value and assign this to the `Id` property on the model object. That way, when we return the the object at the end of the `Add()` method, it's `Id` prop is not null.
 
+### Configuration
+In our startup class, we're currently registering our `IRestaurantData` service with the `InMemoryRestaurantData` implementation. We need to amend this to use our new `SqlRestaurantData` implementation. We also need to alter the registration method we use. Currently we're employing `AddSingleton<T>` - i.e. create a single instance and keep it throughout the app runtime, but DbContext is not thread safe so we should create a new instance for each new HTTP request using `AddScoped<T>` which ensures the DbContext is only used on a single logical thread.
+
+**Before:** `services.AddSingleton<IRestaurantData, InMemoryRestaurantData>()`
+**After:** `services.AddScoped<IRestaurantData, SqlRestaurantData>()`
+
+We also need to register an Entity Framework service to make the DbContext actually do something.
+
+`services.AddDbContext<OdeToFoodDbContext>(options => options.UseSqlServer(_configuration.GetConnectionString("OdeToFood")))`
+
+In the above, we provide the name of our DbContext derived class `OdeToFoodDbContext`, we instruct the service to use SQL Server and provide a connection string. We provide this string via our _appsettings.json_ file using an instance of the `IConfiguration` service. `GetConnectionString()` is a shortcut method that will look in our config file for a group named "ConnectionStrings" and then for a string with the string identifier we provide as a parameter - in our case "OdeToFood".
+
 ## POST - Redirect - GET Pattern
 
 This design pattern is pretty straight forward. We begin with a HTTP POST which is comprised of some submitted input data from the user. When the user submits this data it is posted back to the server, then we redirect the user to a different URL and retrieve this data in a HTTP GET to render it to the view.
