@@ -17,6 +17,7 @@ This method creates a webhost builder object, sets it to use a `Startup` object 
 - Sets up IIS Express integration (not really gone into depth with this as it's apparently useful for creating Intranet apps for users inside a company firewall on Windows - for passing credentials to the Kestrel server)
 - Sets up default logging when building
 - Creates an object that implements the `IConfiguration` interface which can be accessed throughout the app and allows us to retrieve config information via the interface
+- registers some services upfront that we can use before we get to `ConfigureServices` in the `Startup` class.
 
 ### IConfiguration service
 - Reads information from a few sources:
@@ -28,6 +29,8 @@ This method creates a webhost builder object, sets it to use a `Startup` object 
 
 ## Startup.cs
 The `Startup` class is constructed from two main parts: a `ConfigureServices()` method, and a `Configure()` method. The former handles the registration of the services that will be utilised by the application. The latter handles the implementation of those services.
+
+`ConfigureServices()` is a non injectible class - so we cannot add further injected dependecies to it like we can with `Configure()`.
 
 ### Services 
 
@@ -580,6 +583,8 @@ We also need to register an Entity Framework service to make the DbContext actua
 `services.AddDbContext<OdeToFoodDbContext>(options => options.UseSqlServer(_configuration.GetConnectionString("OdeToFood")))`
 
 In the above, we provide the name of our DbContext derived class `OdeToFoodDbContext` that we want to execute and we provide the options that we want to use to initialise that class. We instruct the service to use SQL Server with an extension method found in `Microsoft.EntityFrameworkCore` namespace, and provide a connection string. We provide this connection string via our _appsettings.json_ file using an instance of the `IConfiguration` service. `GetConnectionString()` is a shortcut method that will look in our config file for a group named "ConnectionStrings" and then for a property with the key we provide as a parameter - in our case "OdeToFood".
+
+For reference: a connection string tells Entity Framework what server to go to and what database to use.
 
 ## POST - Redirect - GET Pattern
 
