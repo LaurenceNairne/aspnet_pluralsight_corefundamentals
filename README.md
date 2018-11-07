@@ -579,7 +579,7 @@ We also need to register an Entity Framework service to make the DbContext actua
 
 `services.AddDbContext<OdeToFoodDbContext>(options => options.UseSqlServer(_configuration.GetConnectionString("OdeToFood")))`
 
-In the above, we provide the name of our DbContext derived class `OdeToFoodDbContext`, we instruct the service to use SQL Server using an extension method found in `Microsoft.EntityFrameworkCore` namespace, and provide a connection string. We provide this string via our _appsettings.json_ file using an instance of the `IConfiguration` service. `GetConnectionString()` is a shortcut method that will look in our config file for a group named "ConnectionStrings" and then for a string with the string identifier we provide as a parameter - in our case "OdeToFood".
+In the above, we provide the name of our DbContext derived class `OdeToFoodDbContext` that we want to execute and we provide the options that we want to use to initialise that class. We instruct the service to use SQL Server with an extension method found in `Microsoft.EntityFrameworkCore` namespace, and provide a connection string. We provide this connection string via our _appsettings.json_ file using an instance of the `IConfiguration` service. `GetConnectionString()` is a shortcut method that will look in our config file for a group named "ConnectionStrings" and then for a property with the key we provide as a parameter - in our case "OdeToFood".
 
 ## POST - Redirect - GET Pattern
 
