@@ -698,5 +698,5 @@ A final note to say that it's possible to add these tokens at a global applicati
 
 ## Research topics to follow on from this project
 - Unit of Work and Repository design patterns in relation to DbContext
-- Differences between `IEnumerable<T>` and `IQueriable<T>` with regards to large datasets
+- Differences between `IEnumerable<T>` and `IQueryable<T>` with regards to large datasets
 - Treating DbContext as a unit of work
