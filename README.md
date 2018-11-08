@@ -336,7 +336,7 @@ In the above example, we have a fairly simple layout that contains a few feature
 
 In the <title> element, we have this call to `@ViewBag.Title`. We are expecting that it will have a value provided in the view in question when it comes to rendering it to a page - we'll see this more clearly when we look at how a view can connect to a layout. We use this because a layout should not have a hardcoded title.
  
-Finally, We have a call to `@RenderSection("footer", required:true)` in the <footer> element. This tells the engine to render any markup included inside a "footer" section in this part of the page. Again we'll see how this is implemented when we get to seeing how a view connects to the layout.
+Finally, We have a call to `@RenderSection("footer", required:true)` in the <footer> element. This tells the engine to render any markup included inside a "footer" section in this part of the page. Again we'll see how this is implemented when we get to seeing how a view connects to the layout. The second parameter in this method will tell the engine whether a footer section needs to be there or not.
  
 ```cshtml
 @model OdeToFood.ViewModels.HomeIndexViewModel
