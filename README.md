@@ -309,6 +309,63 @@ We can then reference this model in the view file to pull properties into HTML e
 </body>
 </html>
 ```
+#### Layout Views
+This is a special type of view that does not return from a controller action. It exists to provide a template for our rendered views, with all of the html payload and consistent sections that we'll want across the application like header, footer, sidebar and so on.
+
+The obvious benefit of using this structure is that we don't need to duplicate effort across all pages and can focus specifically on bespoke elements in each of our rendered views. Where rendered views live in a folder that matches the controller action name that they are returned from, special views like this live in a 'Shared' folder so that it's accessible throughout the application.
+
+```cshtml
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <div>
+        @RenderBody()
+    </div>
+    <footer>
+        @RenderSection("footer", required:true)
+    </footer>
+</body>
+</html>
+```
+In the above example, we have a fairly simple layout that contains a few features worth noting. First and foremost, we must have a single `@RenderBody()` call in our layout. This tells the engine where the bulk of the rendered view in question will sit in the overall markup.
+
+In the <title> element, we have this call to `@ViewBag.Title`. We are expecting that it will have a value provided in the view in question when it comes to rendering it to a page - we'll see this more clearly when we look at how a view can connect to a layout. We use this because a layout should not have a hardcoded title.
+ 
+Finally, We have a call to `@RenderSection("footer", required:true)` in the <footer> element. This tells the engine to render any markup included inside a "footer" section in this part of the page. Again we'll see how this is implemented when we get to seeing how a view connects to the layout.
+ 
+```cshtml
+@model OdeToFood.ViewModels.HomeIndexViewModel
+@{
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>All Restaurants</h1>
+<table>
+    @foreach (var restaurant in Model.Restaurants)
+    {
+        <tr>
+            <td>@restaurant.Id</td>
+            <td>@restaurant.Name</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@restaurant.Id">Explore</a>
+            </td>
+        </tr>
+    }
+</table>
+<a asp-action="Create">Create Restaurant</a>
+@section footer {
+    @Model.CurrentMessage
+}
+```
+At the top of our index view, we include a C# snippet to set the `ViewBag.Title` discussed earlier and to set the layout view to use when rendering the page. We have to set the title before instructing the view to use the layout, else our title field will not be populated and would likely throw an exception.
+
+At the bottom of the file we add our `@section footer {}` which holds all our markup that we want to be rendered when we call `@RenderSection()` in the layout view. In our case, footer will be rendered in the footer element.
 
 #### Tag Helpers
 
