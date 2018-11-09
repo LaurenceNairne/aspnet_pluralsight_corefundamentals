@@ -372,7 +372,7 @@ A _ViewStart file is processed before any views are rendered to a page. Because 
 
 We can override the default in two ways:
 
-- We can add further _ViewStart files closer to views that we want to have a different layout
+- We can add further _ViewStart files closer to views in the hierarchy that we want to have a different layout
 - We can add a layout to a view specifically or set it to `null`
 
 #### _ViewImports
