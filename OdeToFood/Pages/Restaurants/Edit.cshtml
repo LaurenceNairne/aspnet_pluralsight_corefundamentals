@@ -1,0 +1,21 @@
+﻿@page "{id}"
+@model EditModel
+
+<h1>Edit @Model.Restaurant.Name</h1>
+<form method="post">
+    <input type="hidden" asp-for="Restaurant.Id" />
+
+    <div>
+        <span asp-validation-for="Restaurant.Name"></span>
+        <br />
+        <label asp-for="Restaurant.Name"></label>
+        <input asp-for="Restaurant.Name" />
+    </div>
+    <div>
+        <label asp-for="Restaurant.Cuisine"></label>
+        <select asp-for="Restaurant.Cuisine"
+                asp-items="@Html.GetEnumSelectList<CuisineOrigin>()"></select>
+    </div>
+    <input type="submit" name="Save" value="Save" />
+    <a asp-action="Index" asp-controller="Home">Cancel</a>
+</form>
