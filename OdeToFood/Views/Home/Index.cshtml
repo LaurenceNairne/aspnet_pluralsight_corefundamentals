@@ -1,7 +1,6 @@
-﻿@model OdeToFood.ViewModels.HomeIndexViewModel
-@{ 
+﻿@model HomeIndexViewModel
+@{
     ViewBag.Title = "Home";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h1>All Restaurants</h1>
@@ -12,7 +11,8 @@
             <td>@restaurant.Id</td>
             <td>@restaurant.Name</td>
             <td>
-                <a asp-action="Details" asp-route-id="@restaurant.Id">Explore</a>                   
+                <a asp-action="Details" asp-route-id="@restaurant.Id">Explore</a>
+                <a asp-page="/Restaurants/Edit" asp-route-id="@restaurant.Id">Edit</a>
             </td>
         </tr>
     }
