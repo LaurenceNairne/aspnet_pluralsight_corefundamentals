@@ -367,6 +367,13 @@ At the top of our index view, we include a C# snippet to set the `ViewBag.Title`
 
 At the bottom of the file we add our `@section footer {}` which holds all our markup that we want to be rendered when we call `@RenderSection()` in the layout view. In our case, footer will be rendered in the footer element.
 
+#### _ViewStart
+- Processed before any views are rendered
+- Can be used to set a default layout view for all views beside and/or below it in the file hierarchy
+- Multiple _ViewStart files can exist to give different defaults in different parts of an application
+- Default can be overriden by adding a layout to a view specifically (or other _ViewStart files as mentioned above)
+
+
 #### Tag Helpers
 
 Tag helpers are just a way of writing C# code that follows the visual syntactic style of HTML elements to make them easier to read in-line. Before these were introduced, the norm was to use HTML Helpers that would follow the form of `@Html.*HelperName*`. 
