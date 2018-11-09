@@ -1,8 +1,10 @@
-﻿@using OdeToFood.Models
-@model Restaurant
+﻿@model Restaurant
+@{
+    ViewBag.Title = "Create";
+}
 
 <h1>Create</h1>
-<form  method="post">
+<form method="post">
     <div>
         <label asp-for="Name"></label>
         <input asp-for="Name" />
@@ -14,4 +16,5 @@
                 asp-items="@Html.GetEnumSelectList<CuisineOrigin>()"></select>
     </div>
     <input type="submit" name="Save" value="Save" />
+    <a asp-action="Index" asp-controller="Home">Cancel</a>
 </form>
