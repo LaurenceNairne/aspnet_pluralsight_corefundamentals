@@ -126,7 +126,8 @@ public void ConfigureServices(IServiceCollection services)
     services.AddScoped<IRestaurantData, InMemoryRestaurantData>();
     services.AddMvc();
 }
------------------------------------------------------------
+```
+```CSharp
 HomeController.cs
 
 private IRestaurantData _restaurantData
@@ -140,7 +141,6 @@ public HomeController(
     _greeter = greeter;
 }
 ```
-
 In the above, we are registering the services as normal in the Startup class. We then have a constructor that requires a `IRestaurantData` and `IGreeter`. When MVC has to send the request to the HomeController, it will see the constructor, see it's dependencies and will check with the service provider for a definition of these services. On finding them, it will request instances (of the implementation classes of those services in the registration) to populate those required parameters, and in our case we then assign their values to our own private properties. We then use these properties in our actions as required.
 
 ### Models
@@ -585,7 +585,40 @@ While similar in premise, Razor Pages are not part of the MVC Framework. Rather 
 
 A Razor Page is just a `.cshtml` file like a standard view. How it differs, is with the `@page` directive. This tells the Razor engine to treat it differently from a normal view.
 
-From it's similarity with a view, a Razor Page can still make use of [_ViewStart](#_viewstart), [_ViewImports](#_viewimports) and [_Layout](#layout-views) views.
+From it's similarity with a view, a Razor Page can still make use of [_ViewStart](#_viewstart), [_ViewImports](#_viewimports) and [_Layout](#layout-views) views. 
+
+Where a Razor View can be supplied with a model when an action is called on a controller, a Razor Page has it's own model. This model can handle dependency injection, using directives and all manner of logic operations within `OnGet()` and `OnPost()` methods. Whenever a GET request arrives to the page, the `OnGet()` method will be invoked, and whenever a POST request is sent from the page (like a form submission), the `OnPost()` method is invoked.
+
+It is possible to put all using directives and dependencies in our pages, but this isn't a good idea - we are then trying to do too much in one place. By separating this to make the page model handle logic, dependencies and namespace usage, and the page handle what actually displays and how, we keep a clean separation of concerns and it allows us to test the model independently from the page and browser.
+
+It's worth mentioning that projects that are primarily API driven will suit MVC better than Razor Pages, but the latter is a more streamlined approach to HTML heavy applications. Generally speaking, a project will use one or the other as it can get confusing to have a mix of both. I am following a course though, so we currently have a mix of the two.
+
+### Editing a database item via a Razor Page
+- Need to add an Update method on our `IRestaurantData` service
+- Need to implement this method on our `SqlRestaurantData` class
+- The method retrieves a `Restaurant` entity object
+- We attach this entity to our `OdeToFoodDbContext` object
+- From the docs, attach makes EF start tracking, but in the "Unchanged" state - which won't dont anything when `SaveChanges()` is called on the DbContext.
+- So we set it's state to modified manually to ensure the new entity is stored in the database
+- Finally we return the `Restaurant` entity.
+
+In our Edit page model, we have: 
+- A private `IRestaurantData` property that we can access throughout the class
+- A `Restaurant` property that is bound to an entity received in the request
+- A constructor that expects an implementation of `IRestaurantData` to be passed in when a request hits
+- Inside this constructor we assign the value of the received `IRestaurantData` to our private property of matching type
+- Finally we have our `OnGet()` and our `OnPost()` methods which will handle the expected requests
+- In our `OnGet()` method, we need to pull in an id parameter as we did with our `HomeController` Details action ([see section on Input ViewModels](#input-view-models)) 
+- This parameter will be looked for in the routing information received in the request, or in a query string on the URL (with priority given to the routing data)
+- We'll see how we can enforce the presence of this ID in the route when we look at the Edit page itself
+- We set the value of our `Restaurant` property to that of the `Restaurant` at the given id in the `OdeToFoodDbContext` - or rather, in our database which is connected to our the `DbContext`
+- We do this using the `SqlRestaurantData.Get(int id)` method
+- We perform a null check, returning the user to the index page if no such id is found in the database, or returning the expected edit page if one is found
+
+In our Edit page we have:
+- A similar setup to the Create form ([see section on Input Validation](#input-validation))
+
+*********************************** Pick up from here ****************************************
 
 ## Entity Framework
 N.B. We're using EF Core in this project.
