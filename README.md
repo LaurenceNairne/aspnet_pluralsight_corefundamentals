@@ -579,6 +579,14 @@ Finally, in the Create view itself we then include `<span>` elements that contai
     <input type="submit" name="Save" value="Save" />
 </form>
 ```
+
+## Razor Pages
+While similar in premise, Razor Pages are not part of the MVC Framework. Rather than a HTTP request going to a controller, it will go directly to a page with a name that matches the request route.
+
+A Razor Page is just a `.cshtml` file like a standard view. How it differs, is with the `@page` directive. This tells the Razor engine to treat it differently from a normal view.
+
+From it's similarity with a view, a Razor Page can still make use of [_ViewStart](#_viewstart), [_ViewImports](#_viewimports) and [_Layout](#layout-views) views.
+
 ## Entity Framework
 N.B. We're using EF Core in this project.
 
