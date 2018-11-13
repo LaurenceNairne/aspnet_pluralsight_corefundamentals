@@ -581,7 +581,7 @@ Finally, in the Create view itself we then include `<span>` elements that contai
 ```
 
 ## Razor Pages
-While similar in premise, Razor Pages are not part of the MVC Framework. Rather than a HTTP request going to a controller, it will go directly to a page with a name that matches the request route.
+While similar in premise, Razor Pages are not part of the MVC Framework. Rather than a HTTP request going to a controller, it will go directly to a page with a parent folder name and file name that matches the request route.
 
 A Razor Page is just a `.cshtml` file like a standard view. How it differs, is with the `@page` directive. This tells the Razor engine to treat it differently from a normal view.
 
@@ -594,31 +594,78 @@ It is possible to put all using directives and dependencies in our pages, but th
 It's worth mentioning that projects that are primarily API driven will suit MVC better than Razor Pages, but the latter is a more streamlined approach to HTML heavy applications. Generally speaking, a project will use one or the other as it can get confusing to have a mix of both. I am following a course though, so we currently have a mix of the two.
 
 ### Editing a database item via a Razor Page
-- Need to add an Update method on our `IRestaurantData` service
-- Need to implement this method on our `SqlRestaurantData` class
-- The method retrieves a `Restaurant` entity object
-- We attach this entity to our `OdeToFoodDbContext` object
-- From the docs, attach makes EF start tracking, but in the "Unchanged" state - which won't dont anything when `SaveChanges()` is called on the DbContext.
-- So we set it's state to modified manually to ensure the new entity is stored in the database
-- Finally we return the `Restaurant` entity.
+We so far have the ability to create new restaurants. Now we need to add the ability to edit an existing one. There's a lot of similarities between the two processes, but this time we need to access and present the values of the existing retaurant in the form when the request comes in.
 
-In our Edit page model, we have: 
-- A private `IRestaurantData` property that we can access throughout the class
-- A `Restaurant` property that is bound to an entity received in the request
-- A constructor that expects an implementation of `IRestaurantData` to be passed in when a request hits
-- Inside this constructor we assign the value of the received `IRestaurantData` to our private property of matching type
-- Finally we have our `OnGet()` and our `OnPost()` methods which will handle the expected requests
-- In our `OnGet()` method, we need to pull in an id parameter as we did with our `HomeController` Details action ([see section on Input ViewModels](#input-view-models)) 
-- This parameter will be looked for in the routing information received in the request, or in a query string on the URL (with priority given to the routing data)
-- We'll see how we can enforce the presence of this ID in the route when we look at the Edit page itself
-- We set the value of our `Restaurant` property to that of the `Restaurant` at the given id in the `OdeToFoodDbContext` - or rather, in our database which is connected to our the `DbContext`
-- We do this using the `SqlRestaurantData.Get(int id)` method
-- We perform a null check, returning the user to the index page if no such id is found in the database, or returning the expected edit page if one is found
+We're currently in the Razor Pages part of the course, so this is going to be set up using a Razor Page, but it shouldn't be a great deal different if we were to retrofit it to work with the standard MVC framework. We'd just need to switch out the PageModel for actions on the HomeController (like we have with Create) and make use standard views instead of pages.
 
-In our Edit page we have:
-- A similar setup to the Create form ([see section on Input Validation](#input-validation))
+The first thing we need to do is amend our `IRestaurantData` service with an `Update()` method. We will then add an implementation for this method in our `SqlRestaurantData` class.
 
-*********************************** Pick up from here ****************************************
+```csharp
+public Restaurant Update(Restaurant restaurant)
+{
+    _context.Attach(restaurant).State = 
+        EntityState.Modified;
+    _context.SaveChanges();
+    return restaurant;
+}
+```
+This method requires a `Restaurant` entity when invoked. We `Attach()` the entity to our `OdeToFoodDbContext`, which makes it begin tracking the entity, but without any further actions, it wouldn't change anything in the database if we called `SaveChanges()` because it is set to `EntityState.Unchanged`. We therefore manually set the state to `EntityState.Modified`, then call `SaveChanges()` to ensure that the database gets updated with the modified entity. Finally we return the `Restaurant` entity.
+
+```csharp
+public class EditModel : PageModel
+    {
+        private IRestaurantData _restaurantData;
+
+        [BindProperty]
+        public Restaurant Restaurant { get; set; }
+
+        public EditModel(IRestaurantData restaurantData)
+        {
+            _restaurantData = restaurantData;
+        }
+
+        public IActionResult OnGet(int id)
+        {
+            Restaurant = _restaurantData.Get(id);
+            if (Restaurant == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return Page();
+        }
+
+        public IActionResult OnPost()
+        {
+            if (ModelState.IsValid)
+            {
+                _restaurantData.Update(Restaurant);
+                return RedirectToAction("Details", "Home", new { id = Restaurant.Id });
+            }
+
+            return Page();
+        }
+    }
+```
+In our Edit page model, we have a private `IRestaurantData` property that we can access throughout the class, a `Restaurant` property that is bound to an entity received in the request and a constructor that expects an implementation of `IRestaurantData` to be passed in when a request hits. Inside this constructor we assign the value of the received `IRestaurantData` to our private property of matching type. We then have our `OnGet()` and our `OnPost()` methods which will handle the expected requests.
+
+In our `OnGet()` method, we need to pull in an id parameter as we did with our `HomeController` Details action ([see section on Input ViewModels](#input-view-models)). This parameter will be looked for in the routing information received in the request, or in a query string on the URL (with priority given to the routing data). We'll see how we can enforce the presence of this ID in the route when we look at the Edit page itself. We set the value of our `Restaurant` property to that of the `Restaurant` at the given id in the `OdeToFoodDbContext` - or rather, in our database which is connected to it. We do this using the `SqlRestaurantData.Get(int id)` method. We perform a null check, returning the user to the index page if no such ID is found in the database, or returning a `PageResult` built by the `Page()` method (provided by the base `PageModel` class if one is found. This will render the expected edit page
+
+In our `OnPost()` we check against validation errors using `ModelState.IsValid`, which will return false if any exceptions are found. If it returns false, we simply return the same page and the Razor Page will handle rendering the validation errors. If it returns true, we call the `Update()` method on our `IRestaurantData` property, passing in our bound `Restaurant` property as a parameter, then return a redirect to the Details view for this restaurant.
+
+In our Edit page we have a similar setup to the Create form ([see section on Input Validation](#input-validation)). We have to include the `@page` directive (because we're working with Razor Page), and we insist on a parameter of `"{id}"`. We'll get an exception if one is not provided. We pull in our `EditModel` class so we can read the values from the `Restaurant` entity. 
+
+In our form, we need to add a hidden input field for `Restaurant.Id`. I haven't yet worked out _why_ we need to include this field, but I know that commenting it out gives us a `System.InvalidOperationException` where the full description reads:
+
+`'The property 'Id' on entity type 'Restaurant' has a temporary value while attempting to change the entity's state to 'Modified'. Either set a permanent value explicitly or ensure that the database is configured to generate values for this property.'`
+
+Presumably, this input field provides some permanence to the `Id` property in our submitted POST request, but I'm just not clear on why (seeing as we already have an id that exists in the database). If I were to hazard a guess, I'd say it is because of the below statement in the Microsoft EF6 documentation:
+
+`When you change the state to Modified all the properties of the entity will be marked as modified and all the property values will be sent to the database when SaveChanges is called.`
+
+I imagine that we're telling Entity Framework all properties on our `Restaurant` entity have been modified, but we're not providing a modified value for our `Id` property. Now we **do not** want the user to submit this value, but we **do** need to submit something for it. As our database is setting values for this property,  we just submit it without a new value.
+
+All other elements are identical to the Create form, but we pull in the properties from the above entity, rather than before where we simply provided a property name to bind our values to when creating a brand new `Restaurant` entity.
 
 ## Entity Framework
 N.B. We're using EF Core in this project.
