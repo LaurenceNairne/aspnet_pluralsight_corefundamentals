@@ -378,6 +378,45 @@ We can override the default in two ways:
 #### _ViewImports
 We already touched on _ViewImports previously when we set up tag helpers (see section on [tag helpers](#tag-helpers)). We can also set up using directives in this file to ensure that we have access to namespaces we'll need for our views. 
 
+#### PartialViews
+Partial views provide a nice way to reuse certain visual elements in different pages. It will render just a portion of the full view of a page, and will be reliant on a parent view to provide model data. It is not designed to go out and get its own independent models.
+
+To give an example, originally our home page rendered a table with all of the restaurants that exist in our database. This was all handled within the Index view in a foreach loop (see section on [Input View Models](#input-view-models)). Instead of this, we're now going to render a partial view for every restaurant that will display the name and cuisine origin, along with our details and edit links as seen below.
+
+```cshtml
+@model Restaurant
+
+<section>
+    <h3>@Model.Name</h3>
+    <div>Cuisine: @Model.Cuisine</div>
+    <div>
+        <a asp-action="Details" asp-route-id="@Model.Id">Explore</a>
+        <a asp-page="/Restaurants/Edit" asp-route-id="@Model.Id">Edit</a>
+    </div>
+</section>
+```
+
+In the the Index view we remove the table entirely, and simply replace it with a HTML helper:
+
+```cshtml
+@model HomeIndexViewModel
+@{
+    ViewBag.Title = "Home";
+}
+
+<h1>All Restaurants</h1>
+
+@foreach (var restaurant in Model.Restaurants)
+{
+    @Html.Partial("_Summary", restaurant)
+}
+
+<div>
+    <a asp-action="Create">Create Restaurant</a>
+</div>
+```
+We use `@Html.Partial()` passing in the string name of our partial view, and the entity that it should use.
+
 #### Tag Helpers
 
 Tag helpers are just a way of writing C# code that follows the visual syntactic style of HTML elements to make them easier to read in-line. Before these were introduced, the norm was to use HTML Helpers that would follow the form of `@Html.*HelperName*`. 
