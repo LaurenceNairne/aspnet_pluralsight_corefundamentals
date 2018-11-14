@@ -447,9 +447,22 @@ In the above example, our `Greeter` View Component has a constructor that inject
 
 Inside the method we are building a model that is the string returned from `GetMessageOfTheDay()` and we then return a `ViewResult` via the `View()` method. It's worth mentioning that by default, `View()` implicitly expects the view name to be "Default", but we have explicitly stated it here. We've done this because the model that we are providing the view with is of type `string`. If we omitted the string name of the view, MVC would expect the view name to be, whatever the message of the day is.
 
-We then need a Partial View that will deal with the rendering of our View Component to a page.
+We then need a Partial View that will deal with the rendering of our View Component to a page. Partial Views that are used with View Components must exist in a specific folder hierarchy: `/Views/Shared/Components/*Name_Of_ViewComponent*`.
 
-*********************************** Pickup from here *************************************************
+In our View, we have an `@model` directive of type `string`  and simply render this model.
+
+```cshtml
+@model string
+
+<div>@Model</div>
+```
+
+In our `_Layout` view we can use our View Component in a couple of ways:
+
+- We can use `@await Component.InvokeAsync("Greeter")
+- We can use a custom tag helper like `<vc:greeter>`
+
+*********************** Start from here ******************************
 
 #### Tag Helpers
 
