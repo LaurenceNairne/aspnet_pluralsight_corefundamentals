@@ -415,7 +415,41 @@ In the the Index view we remove the table entirely, and simply replace it with a
     <a asp-action="Create">Create Restaurant</a>
 </div>
 ```
-We use `@Html.Partial()` passing in the string name of our partial view, and the entity that it should use.
+We use `@Html.Partial()` passing in the string name of our partial view, and the entity that it should use. We could use this Partial View anywhere we needed to display the same summary information throughout the application.
+
+#### View Components
+Using View Components is similar in principle to using Parial Views. The difference lies in the context. With a Partial View, it is reliant on a parent to provide the model information, and it is contextually related to the parent view in terms of what it is rendering. In our above example, our Index view is about displaying our restaurants, and our Partial View is about rendering a single restaurant.
+
+View Components are most useful when we have to render parts of a page that have no real connection to the rest of the parent view (like an advertisement banner on an about page). They consists of a class that derives from the base `ViewComponent` class and a Partial View that will handle the render.
+
+`ViewComponent` objects are completely independent, performing their own data access, building their own models, injecting their own services and rendering their own Partial Views. It can be considered like a miniature controller, but it is only used internally within the application by other views and does not receive any requests via routing.
+
+`ViewComponent` classes must be named as `*Something*ViewComponent`, where "Something" is replaced with the name that describes your class.
+
+```chsarp
+public class GreeterViewComponent : ViewComponent
+{
+    private IGreeter _greeter;
+
+    public GreeterViewComponent(IGreeter greeter)
+    {
+        _greeter = greeter;
+    }
+
+    public IViewComponentResult Invoke()
+    {
+        var model = _greeter.GetMessageOfTheDay();
+        return View("Default", model);
+    }
+}
+```
+In the above example, our `Greeter` View Component has a constructor that injects an implementation of the `IGreeter` service, and we assign the value to our own private `IGreeter` property - the same way we do it in a controller. Where a controller would use an `IActionResult` with a name that would be represented in the request URL, here we provide an `Invoke()` method that returns an `IViewComponentResult`. MVC will invoke  this when we use the component elsewhere in the application.
+
+Inside the method we are building a model that is the string returned from `GetMessageOfTheDay()` and we then return a `ViewResult` via the `View()` method. It's worth mentioning that by default, `View()` implicitly expects the view name to be "Default", but we have explicitly stated it here. We've done this because the model that we are providing the view with is of type `string`. If we omitted the string name of the view, MVC would expect the view name to be, whatever the message of the day is.
+
+We then need a Partial View that will deal with the rendering of our View Component to a page.
+
+*********************************** Pickup from here *************************************************
 
 #### Tag Helpers
 
