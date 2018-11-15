@@ -462,7 +462,7 @@ In our `_Layout` view we can use our View Component in a couple of ways:
 - We can use `@await Component.InvokeAsync("Greeter")
 - We can use a custom tag helper like `<vc:greeter>`
 
-*********************** Start from here ******************************
+The former is the old style way of doing things before tag helpers existed. The latter is syntactic sugar which does exactly the same thing. If we choose to use the latter, we must update our _ViewImports file to include another directive: `@addTagHelper *, OdeToFood`. This just tells MVC that we want access to custom tag helpers created within the project.
 
 #### Tag Helpers
 
