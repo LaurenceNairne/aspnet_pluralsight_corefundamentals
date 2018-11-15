@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -25,8 +27,9 @@ namespace OdeToFood
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IGreeter, Greeter>();
-            services.AddDbContext<OdeToFoodDbContext>(options => 
-                options.UseSqlServer(_configuration.GetConnectionString("OdeToFood")));
+            services.AddDbContext<OdeToFoodDbContext>(
+                options => options.UseSqlServer(
+                    _configuration.GetConnectionString("OdeToFood")));
             services.AddScoped<IRestaurantData, SqlRestaurantData>();
             services.AddMvc();
         }
@@ -43,6 +46,8 @@ namespace OdeToFood
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseRewriter(new RewriteOptions()
+                .AddRedirectToHttpsPermanent());
             app.UseStaticFiles();
             app.UseMvc(ConfigureRoutes);
 
